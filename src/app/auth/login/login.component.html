@@ -1,0 +1,26 @@
+<div class="card flex justify-content-center">
+  <div class="flex flex-column gap-2">
+      <label for="username">Username</label>
+      <input
+          pInputText
+          id="username"
+          aria-describedby="username-help"
+          [(ngModel)]="loginData.username" />
+      <small id="username-help">
+          Enter your username
+      </small>
+  </div>
+  <div class="flex flex-column gap-2">
+      <label for="username">Password</label>
+      <p-password
+          id="password"
+          aria-describedby="password-help"
+          [(ngModel)]="loginData.password"
+          [feedback]="false" />
+      <small id="password-help">
+          Enter your password
+      </small>
+  </div>
+
+  <p-button (click)="singIn()" label="Submit" />
+</div>

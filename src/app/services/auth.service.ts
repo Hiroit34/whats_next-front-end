@@ -1,11 +1,11 @@
-import { iLogin } from './../../models/login';
+import { iLogin } from '../models/login';
 import { Injectable } from '@angular/core';
-import { iUser } from '../../models/user';
+import { iUser } from '../models/user';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../environments/environment.development';
 
 
 type AccessData = {
@@ -36,13 +36,25 @@ export class AuthService {
     return this.http.post<AccessData>(this.registerUrl, newUser)
   }
 
-  login(loginData:iLogin):Observable<AccessData> {
+  login(loginData: iLogin): Observable<AccessData> {
     return this.http.post<AccessData>(this.loginUrl, loginData)
-    .pipe(tap(data => {
-      this.authSubj.next(data.user)
-      localStorage.setItem("accessData", JSON.stringify(data))
-      this.autoLogout(data.token)
-    }))
+      .pipe(
+        tap(data => {
+          this.authSubj.next(data.user);
+          localStorage.setItem('accessData', JSON.stringify(data));
+          this.autoLogout(data.token);
+        })
+      );
+  }
+
+  getAccessToken(): string {
+    const userJson = localStorage.getItem('accessData');
+    if (!userJson) return '';
+
+    const accessData: AccessData = JSON.parse(userJson);
+    if (this.jwtHelper.isTokenExpired(accessData.token)) return '';
+
+    return accessData.token;
   }
 
   logout() {

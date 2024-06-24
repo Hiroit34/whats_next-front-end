@@ -1,4 +1,4 @@
 export interface iLogin {
-  email: string,
+  username: string,
   password: string
 }
