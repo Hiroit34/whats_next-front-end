@@ -10,6 +10,7 @@ import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
+import { CheckboxModule } from 'primeng/checkbox';
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import { PasswordModule } from 'primeng/password';
     ButtonModule,
     DividerModule,
     InputTextModule,
-    PasswordModule
+    PasswordModule,
+    CheckboxModule
   ]
 })
 export class AuthModule { }

@@ -16,7 +16,7 @@ export class HeaderComponent {
   ngOnInit(){
     this.items = [
       {
-          label: 'Login',
+          label: 'Sign up',
           icon: 'pi pi-palette',
           items: [
               {
@@ -24,8 +24,8 @@ export class HeaderComponent {
                   route: '/auth/login'
               },
               {
-                  label: 'Configuration',
-                  route: '/configuration'
+                  label: 'Register',
+                  route: '/auth/register'
               }
           ]
       },
