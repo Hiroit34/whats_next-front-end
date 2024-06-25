@@ -29,7 +29,7 @@ export class HeaderComponent {
               label: 'Home',
               icon: 'pi pi-home',
               command: () => {
-                this.router.navigate(['/home'])
+                this.router.navigate(['/'])
               }
           }
       ];
@@ -50,7 +50,10 @@ export class HeaderComponent {
                 },
                 {
                   label: 'All Task',
-                  icon: 'pi pi-list-check'
+                  icon: 'pi pi-list-check',
+                  command: () => {
+                    this.router.navigate(['/task'])
+                  }
                 }
             ]
         },

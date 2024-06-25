@@ -36,7 +36,7 @@ import { MenuModule } from 'primeng/menu';
     ButtonModule,
     AvatarModule,
     AvatarGroupModule,
-    MenuModule
+    MenuModule,
   ],
   providers: [
     AuthService,

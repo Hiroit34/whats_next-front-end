@@ -25,6 +25,7 @@ export class AuthService {
     this.restoreUser()
   }
 
+  private tokenKey = 'auth-token';
   registerUrl: string = environment.registerUrl;
   loginUrl: string = environment.loginUrl;
 
@@ -86,5 +87,13 @@ export class AuthService {
       this.authSubj.next(accessData.user);
       this.autoLogout(accessData.token)
     }
+  }
+
+  setToken(token: string): void {
+    localStorage.setItem(this.tokenKey, token);
+  }
+
+  clearToken(): void {
+    localStorage.removeItem(this.tokenKey);
   }
 }
