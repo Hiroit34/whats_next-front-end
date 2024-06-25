@@ -26,7 +26,7 @@ export class LoginComponent {
   singIn() {
     this.authSvc.login(this.loginData)
     .subscribe(d => {
-      this.router.navigate(['/'])
+      this.router.navigate(['/home'])
     })
   }
 

@@ -4,7 +4,7 @@ import { iUser } from '../models/user';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, map, tap } from 'rxjs';
 import { environment } from '../../environments/environment.development';
 
 
@@ -31,6 +31,8 @@ export class AuthService {
   jwtHelper: JwtHelperService = new JwtHelperService()
 
   authSubj = new BehaviorSubject<iUser|null>(null)
+
+  user$ = this.authSubj.asObservable();
 
   register(newUser:Partial<iUser>):Observable<AccessData> {
     return this.http.post<AccessData>(this.registerUrl, newUser)

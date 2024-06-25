@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
+import { AuthService } from '../../services/auth.service';
+import { iUser } from '../../models/user';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -9,48 +12,74 @@ import { MenuItem } from 'primeng/api';
 })
 export class HeaderComponent {
 
+  constructor(
+    private router: Router,
+    private authSvc: AuthService
+  ) {
+    this.user$ = this.authSvc.user$;
+  }
+
+  user$!: Observable<iUser | null>
   items: MenuItem[] | undefined;
+  avatarItems: MenuItem[] | undefined;
 
-  constructor(private router: Router) {}
-
-  ngOnInit(){
-    this.items = [
-      {
-          label: 'Sign up',
-          icon: 'pi pi-palette',
-          items: [
-              {
-                  label: 'Login',
-                  route: '/auth/login'
-              },
-              {
-                  label: 'Register',
-                  route: '/auth/register'
+  ngOnInit() {
+      this.items = [
+          {
+              label: 'Home',
+              icon: 'pi pi-home',
+              command: () => {
+                this.router.navigate(['/home'])
               }
-          ]
-      },
-      {
-          label: 'Programmatic',
-          icon: 'pi pi-link',
-          command: () => {
-              this.router.navigate(['/auth/login']);
           }
-      },
-      {
-          label: 'External',
-          icon: 'pi pi-home',
-          items: [
-              {
-                  label: 'Angular',
-                  url: 'https://angular.io/'
-              },
-              {
-                  label: 'Vite.js',
-                  url: 'https://vitejs.dev/'
-              }
-          ]
-      }
-  ];
-}
+      ];
 
+      this.avatarItems = [
+        {
+            label: 'Documents',
+            items: [
+                {
+                    label: 'New',
+                    icon: 'pi pi-plus',
+                    shortcut: '⌘+N'
+                },
+                {
+                    label: 'Search',
+                    icon: 'pi pi-search',
+                    shortcut: '⌘+S'
+                },
+                {
+                  label: 'All Task',
+                  icon: 'pi pi-list-check'
+                }
+            ]
+        },
+        {
+            label: 'Profile',
+            items: [
+                {
+                    label: 'Settings',
+                    icon: 'pi pi-cog',
+                    shortcut: '⌘+O'
+                },
+                {
+                    label: 'Messages',
+                    icon: 'pi pi-inbox',
+                    badge: '2'
+                },
+                {
+                    label: 'Logout',
+                    icon: 'pi pi-sign-out',
+                    shortcut: '⌘+Q',
+                    command: () => {
+                      this.authSvc.logout();
+                    }
+                }
+            ]
+        },
+        {
+            separator: true
+        }
+    ];
+  }
 }

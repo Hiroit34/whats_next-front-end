@@ -10,6 +10,13 @@ import { AuthService } from './services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { MenubarModule } from 'primeng/menubar';
 import { HeaderComponent } from './main-components/header/header.component';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { AvatarModule } from 'primeng/avatar';
+import { AvatarGroupModule } from 'primeng/avatargroup';
+import { MenuModule } from 'primeng/menu';
 
 @NgModule({
   declarations: [
@@ -23,6 +30,13 @@ import { HeaderComponent } from './main-components/header/header.component';
     FormsModule,
     MenubarModule,
     HttpClientModule,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule,
+    ButtonModule,
+    AvatarModule,
+    AvatarGroupModule,
+    MenuModule
   ],
   providers: [
     AuthService,

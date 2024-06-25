@@ -11,6 +11,7 @@ import { DividerModule } from 'primeng/divider';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { CheckboxModule } from 'primeng/checkbox';
+import {FocusTrapModule} from 'primeng/focustrap';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import { CheckboxModule } from 'primeng/checkbox';
     DividerModule,
     InputTextModule,
     PasswordModule,
-    CheckboxModule
+    CheckboxModule,
+    FocusTrapModule
   ]
 })
 export class AuthModule { }
