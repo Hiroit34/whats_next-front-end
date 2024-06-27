@@ -1,0 +1,57 @@
+<div>
+  <p-pickList
+    [source]="availableTasks"
+    [target]="completedTasks"
+    sourceHeader="Available Tasks"
+    targetHeader="Selected Tasks"
+    [dragdrop]="true"
+    [responsive]="true"
+    [sourceStyle]="{ height: '30rem' }"
+    [targetStyle]="{ height: '30rem' }"
+    filterBy="name"
+    sourceFilterPlaceholder="Search by title"
+    targetFilterPlaceholder="Search by title"
+    breakpoint="1400px"
+    (onMoveToTarget)="onTaskMoveToTarget($event)"
+    (onMoveToSource)="onTaskMoveToSource($event)"
+    (onMoveAllToTarget)="onMoveAllToTarget($event)"
+    (onMoveAllToSource)="onMoveAllToSource($event)">
+  >
+    <ng-template pTemplate="sourceControls"></ng-template>
+    <ng-template pTemplate="targetControls"></ng-template>
+    <ng-template pTemplate="controls"></ng-template>
+
+    <ng-template let-task pTemplate="item">
+      <div class="flex flex-wrap p-2 align-items-center gap-3">
+        <div class="flex-1 flex flex-column gap-2">
+          <span class="font-bold">
+            {{ task.name }}
+          </span>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-file text-sm"></i>
+            <span>
+              {{ task.description }}
+            </span>
+          </div>
+        </div>
+        <span class="font-bold text-900">
+          {{ task.status }}
+        </span>
+      </div>
+    </ng-template>
+  </p-pickList>
+  <!-- <div class="flex justify-content-between mt-3">
+    <button
+      pButton
+      type="button"
+      label="Move All to Completed"
+      (click)="moveAllToTarget()"
+    ></button>
+    <button
+      pButton
+      type="button"
+      label="Move All to Available"
+      (click)="moveAllToSource()"
+    ></button>
+  </div> -->
+</div>

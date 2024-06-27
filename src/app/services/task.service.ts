@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { iTask } from '../models/task';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { iTaskResponseLight } from '../models/task-response-light';
 
 @Injectable({
   providedIn: 'root'
@@ -10,18 +11,30 @@ import { HttpClient } from '@angular/common/http';
 export class TaskService {
 
   taskUrl = environment.taskUrl;
-  taskArr!: iTask[];
-  taskSubject = new BehaviorSubject<iTask[]>([]);
-  $task = this.taskSubject.asObservable();
+  taskUrlCreate = environment.taskUrlCreate;
+  private taskSubject = new BehaviorSubject<iTaskResponseLight[]>([]);
+  task$ = this.taskSubject.asObservable();
 
   constructor(private http: HttpClient) {
-    this.getAllTask().subscribe(res => {
-      this.taskSubject.next(res);
-      this.taskArr = res;
-    })
-   }
+    this.loadAllTasks();
+  }
 
-  getAllTask() {
-    return this.http.get<iTask[]>(this.taskUrl);
+  private loadAllTasks() {
+    this.getAllTasks().subscribe(res => {
+      this.taskSubject.next(res);
+    });
+  }
+
+  getAllTasks(): Observable<iTaskResponseLight[]> {
+    return this.http.get<iTaskResponseLight[]>(this.taskUrl);
+  }
+
+  createTask(task: iTask): Observable<iTask> {
+    return this.http.post<iTask>(this.taskUrlCreate, task);
+  }
+
+  updateTaskStatus(taskId: number, status: string): Observable<iTaskResponseLight> {
+    const url = `${this.taskUrl}/${taskId}/status`;
+    return this.http.patch<iTaskResponseLight>(url, { status });
   }
 }

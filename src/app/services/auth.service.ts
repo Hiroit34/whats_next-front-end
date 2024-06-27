@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { BehaviorSubject, Observable, map, tap } from 'rxjs';
 import { environment } from '../../environments/environment.development';
+import { iRole } from '../models/role';
 
 
 type AccessData = {
@@ -32,8 +33,10 @@ export class AuthService {
   jwtHelper: JwtHelperService = new JwtHelperService()
 
   authSubj = new BehaviorSubject<iUser|null>(null)
+  userRoleSubj = new BehaviorSubject<string>('USER');
 
   user$ = this.authSubj.asObservable();
+  userRole$ = this.userRoleSubj.asObservable();
 
   register(newUser:Partial<iUser>):Observable<AccessData> {
     return this.http.post<AccessData>(this.registerUrl, newUser)
@@ -45,6 +48,9 @@ export class AuthService {
         tap(data => {
           this.authSubj.next(data.user);
           localStorage.setItem('accessData', JSON.stringify(data));
+          const roles = data.user.roles.map((role: iRole) => role.typeRole);
+          localStorage.setItem('userRoles', JSON.stringify(roles));
+          this.setRole(roles);
           this.autoLogout(data.token);
         })
       );
@@ -63,6 +69,8 @@ export class AuthService {
   logout() {
     this.authSubj.next(null);
     localStorage.removeItem('accessData');
+    localStorage.removeItem('userRoles');
+    this.userRoleSubj.next('USER');
     this.router.navigate(["/login"])
   }
 
@@ -76,11 +84,11 @@ export class AuthService {
         this.logout();
       }, expsInMs)
     }
+    this.router.navigate(['/'])
   }
 
   restoreUser() {
     const USERJSON = localStorage.getItem('accessData')
-
     if(!USERJSON) return;
     const accessData:AccessData = JSON.parse(USERJSON)
     if(accessData.token && accessData.user) {
@@ -89,11 +97,23 @@ export class AuthService {
     }
   }
 
-  setToken(token: string): void {
-    localStorage.setItem(this.tokenKey, token);
+  getRole(): string {
+    const rolesJson = localStorage.getItem('userRoles');
+    if (!rolesJson) return '';
+
+    const roles: string[] = JSON.parse(rolesJson);
+    if (roles.includes('ADMIN')) {
+      return 'ADMIN';
+    } else {
+      return 'USER';
+    }
   }
 
-  clearToken(): void {
-    localStorage.removeItem(this.tokenKey);
+  private setRole(roles: string[]) {
+    if (roles.includes('ADMIN')) {
+      this.userRoleSubj.next('ADMIN');
+    } else {
+      this.userRoleSubj.next('USER');
+    }
   }
 }
