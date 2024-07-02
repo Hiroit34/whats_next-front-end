@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { HomeRoutingModule } from './home-routing.module';
 import { HomeComponent } from './home.component';
 import { ButtonModule } from 'primeng/button';
+import { AnimateOnScrollModule } from 'primeng/animateonscroll';
 
 
 @NgModule({
@@ -14,6 +15,7 @@ import { ButtonModule } from 'primeng/button';
     CommonModule,
     HomeRoutingModule,
     ButtonModule,
+    AnimateOnScrollModule,
   ]
 })
 export class HomeModule { }

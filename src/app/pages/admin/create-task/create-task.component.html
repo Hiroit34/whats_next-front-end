@@ -1,34 +1,97 @@
-<div class="card">
-  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+<div
+  class="h-50rem surface-card p-4 shadow-2 border-round w-full flex justify-content-center mt-8"
+>
+  <form class="h-auto" [formGroup]="taskForm" (ngSubmit)="onSubmit()">
     <div class="p-field">
-      <label for="title">Title</label>
+      <label class="block text-900 font-medium mb-2" for="title">Title</label>
       <input id="title" type="text" pInputText formControlName="title" />
-      <div *ngIf="taskForm.get('title')?.invalid && taskForm.get('title')?.touched">
-        <small class="p-error" *ngIf="taskForm.get('title')?.hasError('required')">Title is required.</small>
-        <small class="p-error" *ngIf="taskForm.get('title')?.hasError('maxLength')">Title cannot exceed 50 characters.</small>
+      <div
+        *ngIf="taskForm.get('title')?.invalid && taskForm.get('title')?.touched"
+      >
+        <small
+          class="p-error"
+          *ngIf="taskForm.get('title')?.hasError('required')"
+          >Title is required.</small
+        >
+        <small
+          class="p-error"
+          *ngIf="taskForm.get('title')?.hasError('maxLength')"
+          >Title cannot exceed 50 characters.</small
+        >
       </div>
     </div>
 
-    <div class="p-field">
-      <label for="description">Description</label>
-      <textarea id="description" pInputTextarea formControlName="description"></textarea>
-      <div *ngIf="taskForm.get('description')?.invalid && taskForm.get('description')?.touched">
-        <small class="p-error" *ngIf="taskForm.get('description')?.hasError('maxLength')">Description cannot exceed 50 characters.</small>
+    <div class="p-field mt-5">
+      <label class="block text-900 font-medium mb-2" for="description"
+        >Description</label
+      >
+      <textarea
+        rows="5"
+        cols="30"
+        id="description"
+        pInputTextarea
+        formControlName="description"
+      ></textarea>
+      <div
+        *ngIf="
+          taskForm.get('description')?.invalid &&
+          taskForm.get('description')?.touched
+        "
+      >
+        <small
+          class="p-error"
+          *ngIf="taskForm.get('description')?.hasError('maxLength')"
+          >Description cannot exceed 50 characters.</small
+        >
       </div>
     </div>
 
-    <div class="p-field">
-      <label for="category">Category</label>
-      <p-dropdown id="category" [options]="category" optionLabel="categoryType" formControlName="category" placeholder="Select a Category"></p-dropdown>
+    <div class="p-field mt-5">
+      <label class="block text-900 font-medium mb-2" for="category"
+        >Category</label
+      >
+      <p-dropdown
+        id="category"
+        [options]="category"
+        optionLabel="categoryType"
+        optionValue="id"
+        formControlName="category"
+        placeholder="Select a Category"
+      ></p-dropdown>
     </div>
 
-    <div class="p-field">
-      <label for="userIds">Assign to:</label>
-      <p-multiSelect id="userIds" [options]="users" optionLabel="username" formControlName="userIds"></p-multiSelect>
+    <div class="p-field mt-5">
+      <label class="block text-900 font-medium mb-2" for="userIds"
+        >Assign to:</label
+      >
+      <p-multiSelect
+        id="userIds"
+        [options]="users"
+        optionLabel="username"
+        optionValue="id"
+        formControlName="userIds"
+      >
+        <ng-template let-country pTemplate="footer">
+          <div class="py-2 px-3">
+            <b>
+              {{ selectedUsers ? selectedUsers.length : 0 }}
+            </b>
+            item{{
+              (selectedUsers ? selectedUsers.length : 0) > 1 ? "s" : ""
+            }}
+            selected.
+          </div>
+        </ng-template>
+      </p-multiSelect>
     </div>
 
-    <div class="p-field">
-      <button pButton type="submit" label="Create Task" [disabled]="taskForm.invalid"></button>
+    <div class="p-field mt-5">
+      <button
+        pButton
+        type="submit"
+        label="Create Task"
+        [disabled]="taskForm.invalid"
+      ></button>
     </div>
   </form>
 </div>

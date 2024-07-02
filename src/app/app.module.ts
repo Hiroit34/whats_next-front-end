@@ -19,6 +19,7 @@ import { AvatarGroupModule } from 'primeng/avatargroup';
 import { MenuModule } from 'primeng/menu';
 import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { MultiSelectModule } from 'primeng/multiselect';
     MenuModule,
     ReactiveFormsModule,
     DropdownModule,
-    MultiSelectModule
+    MultiSelectModule,
+    ToastModule
   ],
   providers: [
     AuthService,

@@ -1,7 +1,7 @@
 import { iCategory } from './category';
 export interface iTask {
   id?: number;
-  name?: string;
+  title?: string;
   description?: string;
   category?: iCategory;
   userIds?: number[];

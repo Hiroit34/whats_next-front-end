@@ -1,4 +1,24 @@
-<div>
+<div class="mx-8 mt-5 flex align-items-start flex-column lg:justify-content-between lg:flex-row">
+  <div>
+      <div class="font-medium text-3xl text-900">Benvenuto, ADMIN</div>
+      <div class="flex align-items-center text-700 flex-wrap">
+          <div class="mr-5 flex align-items-center mt-3">
+              <i class="pi pi-users mr-2"></i>
+              <span>{{users.length}} Active Users</span>
+          </div>
+          <div class="mr-5 flex align-items-center mt-3">
+              <i class="pi pi-globe mr-2"></i>
+              <span>{{allTask.length}} tasks</span>
+          </div>
+      </div>
+  </div>
+  <div class="mt-3 lg:mt-0">
+      <button pButton pRipple label="Add" class="p-button-outlined mr-2" icon="pi pi-user-plus"></button>
+      <button pButton pRipple label="Save" icon="pi pi-check"></button>
+  </div>
+</div>
+
+<div class="mt-5">
   <p-pickList
     [source]="availableTasks"
     [target]="completedTasks"
@@ -8,14 +28,14 @@
     [responsive]="true"
     [sourceStyle]="{ height: '30rem' }"
     [targetStyle]="{ height: '30rem' }"
-    filterBy="name"
-    sourceFilterPlaceholder="Search by title"
-    targetFilterPlaceholder="Search by title"
+    filterBy="combinedField"
+    sourceFilterPlaceholder="Search"
+    targetFilterPlaceholder="Search"
     breakpoint="1400px"
     (onMoveToTarget)="onTaskMoveToTarget($event)"
     (onMoveToSource)="onTaskMoveToSource($event)"
     (onMoveAllToTarget)="onMoveAllToTarget($event)"
-    (onMoveAllToSource)="onMoveAllToSource($event)">
+    (onMoveAllToSource)="onMoveAllToSource($event)"
   >
     <ng-template pTemplate="sourceControls"></ng-template>
     <ng-template pTemplate="targetControls"></ng-template>
@@ -25,7 +45,11 @@
       <div class="flex flex-wrap p-2 align-items-center gap-3">
         <div class="flex-1 flex flex-column gap-2">
           <span class="font-bold">
-            {{ task.name }}
+            {{ task.title }}
+            <p-chip
+              label="{{ task.category?.categoryType || 'No Category' }}"
+              class="ml-2"
+            ></p-chip>
           </span>
           <div class="flex align-items-center gap-2">
             <i class="pi pi-file text-sm"></i>
@@ -33,25 +57,175 @@
               {{ task.description }}
             </span>
           </div>
+          <div class="flex align-items-center gap-2">
+            <span *ngIf="task.users.length <= 2">
+              <span *ngFor="let user of task.users">
+                {{ user.username }}
+              </span>
+            </span>
+            <span *ngIf="task.users.length > 2">
+              <span *ngFor="let user of task.users.slice(0, 2)">
+                {{ user.username }},
+              </span>
+              <p-badge
+                [value]="task.users.length - 2"
+                severity="info"
+                class="ml-2"
+              ></p-badge>
+            </span>
+          </div>
         </div>
         <span class="font-bold text-900">
           {{ task.status }}
         </span>
+        <button
+          pButton
+          icon="pi pi-pencil"
+          class="p-button-rounded p-button-info"
+          (click)="openEditDialog(task)"
+        ></button>
       </div>
     </ng-template>
   </p-pickList>
-  <!-- <div class="flex justify-content-between mt-3">
-    <button
-      pButton
-      type="button"
-      label="Move All to Completed"
-      (click)="moveAllToTarget()"
-    ></button>
-    <button
-      pButton
-      type="button"
-      label="Move All to Available"
-      (click)="moveAllToSource()"
-    ></button>
-  </div> -->
+
+  <p-dialog
+    header="Edit Task"
+    [(visible)]="displayDialog"
+    [modal]="true"
+    [closable]="false"
+    [resizable]="false"
+    [style]="{ width: '30rem' }"
+  >
+    <form class="card" [formGroup]="taskForm" (ngSubmit)="confirm1($event)">
+      <div class="grid">
+        <div class="col-6 p-field mt-3">
+          <label class="block text-900 font-medium mb-2" for="category"
+            >Category</label
+          >
+          <p-dropdown
+            [style]="{ width: '100%' }"
+            id="category"
+            filterBy="catField"
+            [filter]="true"
+            [options]="categories"
+            optionLabel="categoryType"
+            optionValue="id"
+            formControlName="category"
+            placeholder="Select a Category"
+          ></p-dropdown>
+        </div>
+
+        <div class="col-6 p-field mt-3">
+          <label class="block text-900 font-medium mb-2" for="userIds"
+            >Assign to:</label
+          >
+          <p-multiSelect
+            [style]="{ width: '100%' }"
+            id="userIds"
+            [options]="users"
+            optionLabel="username"
+            optionValue="id"
+            formControlName="userIds"
+            placeholder="Select User"
+          >
+            <ng-template let-user pTemplate="selectedItem">
+              {{ user.username }}
+            </ng-template>
+            <ng-template let-user pTemplate="item">
+              {{ user.username }}
+            </ng-template>
+            <ng-template let-user pTemplate="footer">
+              <div class="py-2 px-3">
+                <b>{{ taskForm.get("userIds")?.value.length || 0 }}</b>
+                User{{
+                  (taskForm.get("userIds")?.value.length || 0) > 1 ? "s" : ""
+                }}
+                selected.
+              </div>
+            </ng-template>
+          </p-multiSelect>
+        </div>
+      </div>
+
+      <div class="p-field mt-3">
+        <label class="block text-900 font-medium mb-2" for="title">Title</label>
+        <input
+          class="w-full"
+          id="title"
+          type="text"
+          pInputText
+          formControlName="title"
+        />
+        <div
+          *ngIf="
+            taskForm.get('title')?.invalid && taskForm.get('title')?.touched
+          "
+        >
+          <small
+            class="p-error"
+            *ngIf="taskForm.get('title')?.hasError('required')"
+            >Title is required.</small
+          >
+          <small
+            class="p-error"
+            *ngIf="taskForm.get('title')?.hasError('maxLength')"
+            >Title cannot exceed 50 characters.</small
+          >
+        </div>
+      </div>
+
+      <div class="p-field mt-3 w-full">
+        <label class="block text-900 font-medium mb-2" for="description"
+          >Description</label
+        >
+        <textarea
+          class="w-full"
+          id="description"
+          pInputTextarea
+          formControlName="description"
+        ></textarea>
+        <div
+          *ngIf="
+            taskForm.get('description')?.invalid &&
+            taskForm.get('description')?.touched
+          "
+        >
+          <small
+            class="p-error"
+            *ngIf="taskForm.get('description')?.hasError('maxLength')"
+            >Description cannot exceed 50 characters.</small
+          >
+        </div>
+      </div>
+
+      <div class="flex justify-content-center p-field mt-2">
+        <p-confirmPopup>
+          <ng-template pTemplate="content" let-message>
+            <div
+              class="flex flex-column align-items-center w-full gap-1 border-bottom-1 surface-border mb-3"
+            >
+              <i [class]="message.icon" class="text-6xl text-primary-500"></i>
+              <p>{{ message.message }}</p>
+            </div>
+          </ng-template>
+        </p-confirmPopup>
+        <p-button
+          pRipple
+          type="submit"
+          label="Save"
+          [disabled]="taskForm.invalid"
+          class="m-2"
+          (click)="confirm1($event)"
+        />
+        <p-button
+          pRipple
+          type="button"
+          label="Cancel"
+          class="m-2"
+          (click)="confirm2($event)"
+        />
+      </div>
+    </form>
+  </p-dialog>
+  <p-toast />
 </div>

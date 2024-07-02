@@ -20,13 +20,21 @@ import { AccordionModule } from 'primeng/accordion';
 import { SplitterModule } from 'primeng/splitter';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { PickListModule } from 'primeng/picklist';
+import { DialogModule } from 'primeng/dialog';
+import { ChipModule } from 'primeng/chip';
+import { BadgeModule } from 'primeng/badge';
+import { CategoryAdminComponent } from './category-admin/category-admin.component';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 
 @NgModule({
   declarations: [
     AdminComponent,
     CreateTaskComponent,
-    AdminTaskComponent
+    AdminTaskComponent,
+    CategoryAdminComponent
   ],
   imports: [
     CommonModule,
@@ -45,7 +53,16 @@ import { PickListModule } from 'primeng/picklist';
     AccordionModule,
     SplitterModule,
     ScrollPanelModule,
-    PickListModule
+    PickListModule,
+    DialogModule,
+    ChipModule,
+    BadgeModule,
+    ToastModule,
+    ConfirmPopupModule
+  ],
+  providers: [
+    ConfirmationService,
+    MessageService
   ]
 })
 export class AdminModule { }

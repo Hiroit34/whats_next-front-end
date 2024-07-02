@@ -48,7 +48,7 @@ export class AuthService {
         tap(data => {
           this.authSubj.next(data.user);
           localStorage.setItem('accessData', JSON.stringify(data));
-          const roles = data.user.roles.map((role: iRole) => role.typeRole);
+          const roles = data.user.roles?.map((role: iRole) => role.typeRole) ?? [];
           localStorage.setItem('userRoles', JSON.stringify(roles));
           this.setRole(roles);
           this.autoLogout(data.token);

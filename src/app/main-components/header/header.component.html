@@ -28,10 +28,6 @@
     </ng-template>
     <ng-template pTemplate="end">
       <div class="flex align-items-center gap-2">
-        <p-iconField iconPosition="left">
-          <p-inputIcon styleClass="pi pi-search" />
-          <input type="text" pInputText placeholder="Search" />
-        </p-iconField>
         <p-button
           *ngIf="!(user$ | async)"
           pRipple

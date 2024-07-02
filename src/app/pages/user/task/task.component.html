@@ -1,1 +1,150 @@
-<p>user task works!</p>
+<div class="mt-5">
+  <p-pickList
+    [source]="availableTasks"
+    [target]="completedTasks"
+    sourceHeader="Available Tasks"
+    targetHeader="Selected Tasks"
+    [dragdrop]="true"
+    [responsive]="true"
+    [sourceStyle]="{ height: '30rem' }"
+    [targetStyle]="{ height: '30rem' }"
+    filterBy="name"
+    sourceFilterPlaceholder="Search by title"
+    targetFilterPlaceholder="Search by title"
+    breakpoint="1400px"
+    (onMoveToTarget)="onTaskMoveToTarget($event)"
+    (onMoveToSource)="onTaskMoveToSource($event)"
+    (onMoveAllToTarget)="onMoveAllToTarget($event)"
+    (onMoveAllToSource)="onMoveAllToSource($event)"
+  >
+    <ng-template pTemplate="sourceControls"></ng-template>
+    <ng-template pTemplate="targetControls"></ng-template>
+    <ng-template pTemplate="controls"></ng-template>
+
+    <ng-template let-task pTemplate="item">
+      <div class="flex flex-wrap p-2 align-items-center gap-3">
+        <div class="flex-1 flex flex-column gap-2">
+          <span class="font-bold">
+            {{ task.name }}
+            <p-chip label="{{ task.category?.categoryType || 'No Category' }}" class="ml-2"></p-chip>
+          </span>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-file text-sm"></i>
+            <span>
+              {{ task.description }}
+            </span>
+          </div>
+        </div>
+        <span class="font-bold text-900">
+          {{ task.status }}
+        </span>
+        <button
+          pButton
+          icon="pi pi-pencil"
+          class="p-button-rounded p-button-info"
+          (click)="openEditDialog(task)"
+        ></button>
+      </div>
+    </ng-template>
+  </p-pickList>
+
+  <p-dialog
+    header="Edit Task"
+    [(visible)]="displayDialog"
+    [modal]="true"
+    [closable]="false"
+    [resizable]="false"
+    [style]="{ width: '70vw', height: '50vh' }"
+  >
+    <form [formGroup]="taskForm" (ngSubmit)="onEditTask()">
+      <div class="p-field">
+        <label for="title">Title</label>
+        <input id="title" type="text" pInputText formControlName="title" />
+        <div
+          *ngIf="
+            taskForm.get('title')?.invalid && taskForm.get('title')?.touched
+          "
+        >
+          <small
+            class="p-error"
+            *ngIf="taskForm.get('title')?.hasError('required')"
+            >Title is required.</small
+          >
+          <small
+            class="p-error"
+            *ngIf="taskForm.get('title')?.hasError('maxLength')"
+            >Title cannot exceed 50 characters.</small
+          >
+        </div>
+      </div>
+
+      <div class="p-field">
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          pInputTextarea
+          formControlName="description"
+        ></textarea>
+        <div
+          *ngIf="
+            taskForm.get('description')?.invalid &&
+            taskForm.get('description')?.touched
+          "
+        >
+          <small
+            class="p-error"
+            *ngIf="taskForm.get('description')?.hasError('maxLength')"
+            >Description cannot exceed 50 characters.</small
+          >
+        </div>
+      </div>
+
+      <div class="p-field">
+        <label for="category">Category</label>
+        <p-dropdown
+          id="category"
+          [options]="categories"
+          optionLabel="categoryType"
+          optionValue="id"
+          formControlName="category"
+          placeholder="Select a Category"
+        ></p-dropdown>
+      </div>
+
+
+      <div class="p-field">
+        <label for="userIds">Assign to:</label>
+        <p-multiSelect
+          id="userIds"
+          [options]="users"
+          optionLabel="username"
+          formControlName="userIds"
+          placeholder="Select User"
+        >
+          <ng-template let-user pTemplate="selectedItem">
+            {{ getUserName(user.id) }}
+          </ng-template>
+          <ng-template let-user pTemplate="item">
+            {{ user.username }}
+          </ng-template>
+        </p-multiSelect>
+      </div>
+
+      <div class="p-field">
+        <button
+          pButton
+          type="submit"
+          label="Save"
+          [disabled]="taskForm.invalid"
+        ></button>
+        <button
+          pButton
+          type="button"
+          label="Cancel"
+          (click)="closeDialog()"
+        ></button>
+      </div>
+    </form>
+  </p-dialog>
+</div>
+
