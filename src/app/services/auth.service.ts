@@ -43,17 +43,17 @@ export class AuthService {
   }
 
   login(loginData: iLogin): Observable<AccessData> {
-    return this.http.post<AccessData>(this.loginUrl, loginData)
-      .pipe(
-        tap(data => {
-          this.authSubj.next(data.user);
-          localStorage.setItem('accessData', JSON.stringify(data));
-          const roles = data.user.roles?.map((role: iRole) => role.typeRole) ?? [];
-          localStorage.setItem('userRoles', JSON.stringify(roles));
-          this.setRole(roles);
-          this.autoLogout(data.token);
-        })
-      );
+    return this.http.post<AccessData>(this.loginUrl, loginData).pipe(
+      tap(data => {
+        this.authSubj.next(data.user);
+        localStorage.setItem('accessData', JSON.stringify(data));
+        localStorage.setItem('user', JSON.stringify(data.user)); // Assicurati di salvare l'utente
+        const roles = data.user.roles?.map((role: iRole) => role.typeRole) ?? [];
+        localStorage.setItem('userRoles', JSON.stringify(roles));
+        this.setRole(roles);
+        this.autoLogout(data.token);
+      })
+    );
   }
 
   getAccessToken(): string {
@@ -70,6 +70,7 @@ export class AuthService {
     this.authSubj.next(null);
     localStorage.removeItem('accessData');
     localStorage.removeItem('userRoles');
+    localStorage.removeItem('user')
     this.userRoleSubj.next('USER');
     this.router.navigate(["/login"])
   }
@@ -109,7 +110,7 @@ export class AuthService {
     }
   }
 
-  private setRole(roles: string[]) {
+  setRole(roles: string[]) {
     if (roles.includes('ADMIN')) {
       this.userRoleSubj.next('ADMIN');
     } else {

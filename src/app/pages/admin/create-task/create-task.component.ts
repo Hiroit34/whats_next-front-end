@@ -28,7 +28,7 @@ export class CreateTaskComponent implements OnInit {
     this.taskForm = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(50)]],
       description: ['', [Validators.required, Validators.maxLength(300)]],
-      status: ['NON_COMPLETATO', Validators.required],
+      status: ['NON_ACCETTATO', Validators.required],
       category: [null, Validators.required],
       userIds: [[], Validators.required],
       isShared: [false],

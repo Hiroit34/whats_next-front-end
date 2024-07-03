@@ -1,67 +1,43 @@
-<div class="card">
-  <p-menubar [model]="items">
-    <ng-template pTemplate="start">
-      <!-- Logo or Brand -->
-    </ng-template>
-    <ng-template pTemplate="item" let-item let-root="root">
-      <a
-        *ngIf="item.visible !== false"
-        pRipple
-        [routerLink]="item.route"
-        class="flex align-items-center p-menuitem-link"
-      >
-        <span [class]="item.icon"></span>
-        <span class="ml-2">{{ item.label }}</span>
-        <span
-          *ngIf="item.shortcut"
-          class="ml-auto border-1 surface-border border-round surface-100 text-xs p-1"
-          >{{ item.shortcut }}</span
-        >
-        <i
-          *ngIf="item.items"
-          [ngClass]="[
-            'pi',
-            root ? 'pi-angle-down ml-2' : 'pi-angle-right ml-auto'
-          ]"
-        ></i>
-      </a>
-    </ng-template>
-    <ng-template pTemplate="end">
-      <div class="flex align-items-center gap-2">
-        <p-button
-          *ngIf="!(user$ | async)"
-          pRipple
-          label="Sign In"
-          [raised]="true"
-          routerLink="/auth/login"
-        />
-        <div class="card flex justify-content-center">
-          <p-menu [popup]="true" #menu [model]="avatarItems" styleClass="w-full md:w-15rem">
-            <ng-template pTemplate="start">
-            </ng-template>
-            <ng-template pTemplate="submenuheader" let-item>
-                <span class="text-primary font-bold">{{ item.label }}</span>
-            </ng-template>
-            <ng-template pTemplate="item" let-item>
-                <a *ngIf="item.visible !== false" pRipple class="flex align-items-center p-menuitem-link">
-                    <span [class]="item.icon"></span>
-                    <span class="ml-2">{{ item.label }}</span>
-                    <span *ngIf="item.shortcut" class="ml-auto border-1 surface-border border-round surface-100 text-xs p-1">{{ item.shortcut }}</span>
-                </a>
-            </ng-template>
-            <ng-template pTemplate="end">
-                <button pRipple class="relative overflow-hidden w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround">
-                    <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" class="mr-2" shape="circle" />
-                    <span class="inline-flex flex-column">
-                        <span class="font-bold">{{firstName}} {{lastName}}</span>
-                        <span class="text-sm">{{userRole}}</span>
-                    </span>
-                </button>
-            </ng-template>
-          </p-menu>
-          <p-avatar *ngIf="(user$ | async)" (click)="menu.toggle($event)" label="U" size="large" styleClass="mr-2" shape="circle" />
-        </div>
+<p-menubar [model]="items">
+  <ng-template pTemplate="start">
+    <!-- Logo or Brand -->
+  </ng-template>
+  <ng-template pTemplate="item" let-item let-root="root">
+    <a *ngIf="item.visible !== false" pRipple [routerLink]="item.route" class="flex align-items-center p-menuitem-link">
+      <span [class]="item.icon"></span>
+      <span class="ml-2">{{ item.label }}</span>
+      <span *ngIf="item.shortcut" class="ml-auto border-1 surface-border border-round surface-100 text-xs p-1">{{ item.shortcut }}</span>
+      <i *ngIf="item.items" [ngClass]="['pi', root ? 'pi-angle-down ml-2' : 'pi-angle-right ml-auto']"></i>
+    </a>
+  </ng-template>
+  <ng-template pTemplate="end">
+    <div class="flex align-items-center gap-2">
+      <p-button *ngIf="!(user$ | async)" pRipple label="Sign In" [raised]="true" routerLink="/auth/login" />
+      <div class="card flex justify-content-center">
+        <p-menu [popup]="true" #menu [model]="avatarItems" styleClass="w-full md:w-15rem">
+          <ng-template pTemplate="start"></ng-template>
+          <ng-template pTemplate="submenuheader" let-item>
+            <span class="text-primary font-bold">{{ item.label }}</span>
+          </ng-template>
+          <ng-template pTemplate="item" let-item>
+            <a *ngIf="item.visible !== false" pRipple class="flex align-items-center p-menuitem-link">
+              <span [class]="item.icon"></span>
+              <span class="ml-2">{{ item.label }}</span>
+              <span *ngIf="item.shortcut" class="ml-auto border-1 surface-border border-round surface-100 text-xs p-1">{{ item.shortcut }}</span>
+            </a>
+          </ng-template>
+          <ng-template pTemplate="end">
+            <button pRipple class="relative overflow-hidden w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround">
+              <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" class="mr-2" shape="circle" />
+              <span class="inline-flex flex-column">
+                <span class="font-bold">{{firstName}} {{lastName}}</span>
+                <span class="text-sm">{{userRole}}</span>
+              </span>
+            </button>
+          </ng-template>
+        </p-menu>
+        <p-avatar *ngIf="(user$ | async)" (click)="menu.toggle($event)" label="U" size="large" styleClass="mr-2" shape="circle" />
       </div>
-    </ng-template>
-  </p-menubar>
-</div>
+    </div>
+  </ng-template>
+</p-menubar>

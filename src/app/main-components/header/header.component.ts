@@ -27,24 +27,13 @@ export class HeaderComponent {
 
   ngOnInit() {
     this.roleSubscription = this.authSvc.userRole$.subscribe((role) => {
+      console.log('User role updated:', role); // Debug log
       this.userRole = role;
-      this.updateMenuItems();
+      this.updateMenuItems(); // Aggiorna i menu items quando il ruolo cambia
     });
 
-    this.extractUserInfo();
-    this.updateMenuItems();
-
-    this.items = [
-      {
-        label: 'Home',
-        icon: 'pi pi-home',
-        command: () => {
-          this.router.navigate(['/']);
-        },
-      },
-    ];
-
     this.userSubscription = this.authSvc.user$.subscribe(user => {
+      console.log('User updated:', user); // Debug log
       if (user) {
         this.firstName = user.firstName;
         this.lastName = user.lastName;
@@ -54,7 +43,11 @@ export class HeaderComponent {
         this.lastName = '';
         this.username = '';
       }
+      this.updateMenuItems(); // Aggiorna i menu items quando l'utente cambia
     });
+
+    this.extractUserInfo();
+    console.log('User info extracted:', this.firstName, this.lastName, this.username); // Debug log
   }
 
   ngOnDestroy() {
@@ -67,6 +60,7 @@ export class HeaderComponent {
   }
 
   private updateMenuItems() {
+    console.log('Updating menu items with role:', this.userRole); // Debug log
     this.avatarItems = [
       {
         label: 'Documents',
@@ -136,6 +130,7 @@ export class HeaderComponent {
         separator: true,
       },
     ];
+    console.log('Avatar items:', this.avatarItems); // Debug log
   }
 
   private extractUserInfo() {
@@ -143,12 +138,13 @@ export class HeaderComponent {
     if (accessData) {
       const parsedData = JSON.parse(accessData);
       this.firstName = parsedData.user.firstName;
-      console.log(parsedData.user.firstName)
+      console.log(parsedData.user.firstName); // Debug log
       this.lastName = parsedData.user.lastName;
-      console.log(parsedData.user.lastName)
+      console.log(parsedData.user.lastName); // Debug log
       this.username = parsedData.user.username;
       const roles = parsedData.user.roles.map((role: any) => role.typeRole);
-      this.userRole = roles.includes('ADMIN') ? 'ADMIN' : 'UTENTE';
+      this.userRole = roles.includes('ADMIN') ? 'ADMIN' : 'USER';
+      this.authSvc.setRole(roles);
     }
   }
 }

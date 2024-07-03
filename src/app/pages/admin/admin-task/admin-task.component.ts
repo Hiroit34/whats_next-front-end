@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { iTaskResponseLight } from '../../../models/task-response-light';
 import { TaskService } from '../../../services/task.service';
@@ -8,6 +8,7 @@ import { UserService } from '../../../services/user.service';
 import { CategoryService } from '../../../services/category.service';
 import { iTask } from '../../../models/task';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-admin-task',
@@ -15,7 +16,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
   styleUrls: ['./admin-task.component.css'],
   providers: [ConfirmationService, MessageService]
 })
-export class AdminTaskComponent {
+export class AdminTaskComponent implements OnInit {
   allTask: iTaskResponseLight[] = [];
   availableTasks: iTaskResponseLight[] = [];
   completedTasks: iTaskResponseLight[] = [];
@@ -24,7 +25,8 @@ export class AdminTaskComponent {
   selectedTask: iTaskResponseLight | undefined;
   users: iUser[] = [];
   categories: iCategory[] = [];
-  selectedUsers: iUser[] = []; // Initialize the selectedUsers array
+  selectedUsers: iUser[] = [];
+  private taskSubscription!: Subscription;
 
   constructor(
     private taskService: TaskService,
@@ -46,39 +48,35 @@ export class AdminTaskComponent {
   }
 
   ngOnInit() {
-    this.loadTasks();
     this.loadUsers();
     this.loadCategories();
+    this.taskSubscription = this.taskService.task$.subscribe(tasks => {
+      this.allTask = tasks.map(task => ({
+        ...task,
+        combinedField: `${task.title} ${task.category?.categoryType || ''}`
+      }));
+      this.updateTaskLists();
+    });
+    this.taskService.loadAllTasks();
   }
 
-  loadTasks() {
-    this.taskService.task$.subscribe((tasks) => {
-      this.allTask = tasks.map((task) => ({
-        ...task,
-        combinedField: `${task.title} ${task.category?.categoryType || ''}`,
-      }));
-      this.availableTasks = this.allTask.filter(
-        (task) => task.status !== 'COMPLETATO'
-      );
-      this.completedTasks = this.allTask.filter(
-        (task) => task.status === 'COMPLETATO'
-      );
-      console.log('Loaded tasks:', this.allTask);
-    });
+  ngOnDestroy() {
+    if (this.taskSubscription) {
+      this.taskSubscription.unsubscribe();
+    }
   }
 
   loadUsers() {
-    this.userService.getAllUser().subscribe((users) => {
+    this.userService.getAllUser().subscribe(users => {
       this.users = users;
-      console.log('Loaded users:', this.users);
     });
   }
 
   loadCategories() {
-    this.categoryService.getAllCategory().subscribe((categories) => {
-      this.categories = categories.map((cat) => ({
+    this.categoryService.getAllCategory().subscribe(categories => {
+      this.categories = categories.map(cat => ({
         ...cat,
-        catField: `${cat.categoryType || ''}`,
+        catField: `${cat.categoryType || ''}`
       }));
     });
   }
@@ -109,45 +107,34 @@ export class AdminTaskComponent {
 
   updateTaskStatus(task: iTaskResponseLight, status: string) {
     this.taskService.updateTaskStatus(task.id, status).subscribe({
-      next: (updatedTask) => {
+      next: updatedTask => {
         console.log(`Task ${task.id} status updated to ${status}`);
         task.status = status;
-
-        this.availableTasks = this.allTask.filter(
-          (task) => task.status !== 'COMPLETATO'
-        );
-        this.completedTasks = this.allTask.filter(
-          (task) => task.status === 'COMPLETATO'
-        );
+        this.taskService.loadAllTasks(); // Ensure tasks are reloaded after status update
       },
-      error: (error) => {
+      error: error => {
         console.error(`Failed to update status for task ${task.id}`, error);
-      },
+      }
     });
   }
 
   openEditDialog(task: iTaskResponseLight) {
     this.selectedTask = task;
-    const userIds = task.users.map((user) => user.id);
-    this.selectedUsers = this.users.filter((user) => userIds.includes(user.id)); // Set selected users
-    console.log('Editing Task:', task.title); // Debug: Verifica i dati della task che stai modificando
-    console.log('User IDs:', userIds); // Debug: Verifica che gli ID degli utenti siano corretti
+    const userIds = task.users.map(user => user.id);
+    this.selectedUsers = this.users.filter(user => userIds.includes(user.id));
     this.taskForm.patchValue({
-      title: task.title, // Assicurati di usare `title`
+      title: task.title,
       description: task.description,
       status: task.status,
-      category: task.category?.id || null, // Assicurati che l'ID della categoria venga impostato correttamente
-      userIds: userIds, // Passa solo gli ID degli utenti
+      category: task.category?.id || null,
+      userIds: userIds
     });
-    console.log('Form Value after patch:', this.taskForm.value); // Debug: Verifica i valori del form dopo il patch
     this.displayDialog = true;
   }
 
   onEditTask() {
     if (this.taskForm.valid && this.selectedTask) {
-      const category = this.categories.find(
-        (cat) => cat.id === this.taskForm.value.category
-      );
+      const category = this.categories.find(cat => cat.id === this.taskForm.value.category);
 
       const updatedTask: iTask = {
         id: this.selectedTask.id,
@@ -156,24 +143,20 @@ export class AdminTaskComponent {
         status: this.taskForm.value.status,
         category: {
           id: category?.id || 0,
-          categoryType: category?.categoryType || '', // Assicurati di includere `categoryType`
+          categoryType: category?.categoryType || ''
         },
         userIds: this.taskForm.value.userIds,
       };
 
-      console.log(
-        'Updated Task Payload:',
-        JSON.stringify(updatedTask, null, 2)
-      ); // Debug: Verifica il payload JSON
       this.taskService.updateTask(updatedTask).subscribe({
-        next: (res) => {
+        next: res => {
           console.log('Task updated successfully:', res);
           this.displayDialog = false;
-          this.loadTasks();
+          this.taskService.loadAllTasks();
         },
-        error: (err) => {
+        error: err => {
           console.error('Error updating task:', err);
-        },
+        }
       });
     }
   }
@@ -181,6 +164,7 @@ export class AdminTaskComponent {
   closeDialog() {
     this.displayDialog = false;
   }
+
 
   confirm1(event: Event) {
     console.log('Confirm1 clicked'); // Aggiunto per debug
@@ -217,5 +201,14 @@ export class AdminTaskComponent {
         // this.messageService.add({ severity: 'error', summary: 'Task non modificata', detail: `La task e' non modificata`, life: 3000 });
       }
     });
+  }
+
+  private updateTaskLists() {
+    this.availableTasks = this.allTask.filter(
+      (task) => task.status !== 'COMPLETATO'
+    );
+    this.completedTasks = this.allTask.filter(
+      (task) => task.status === 'COMPLETATO'
+    );
   }
 }

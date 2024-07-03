@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment.development';
-import { iTask } from '../models/task';
-import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { iTaskResponseLight } from '../models/task-response-light';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { iTaskResponseLight } from '../models/task-response-light';
+import { iTask } from '../models/task';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,16 +12,16 @@ import { tap } from 'rxjs/operators';
 export class TaskService {
   taskUrl = environment.taskUrl;
   taskUrlCreate = environment.taskUrlCreate;
-  private taskSubject = new BehaviorSubject<iTaskResponseLight[]>([]);
+  taskSubject = new BehaviorSubject<iTaskResponseLight[]>([]);
   task$ = this.taskSubject.asObservable();
 
   constructor(private http: HttpClient) {
     this.loadAllTasks();
   }
 
-  private loadAllTasks() {
-    this.getAllTasks().subscribe(res => {
-      this.taskSubject.next(res);
+  loadAllTasks() {
+    this.getAllTasks().subscribe(tasks => {
+      this.taskSubject.next(tasks);
     });
   }
 
@@ -31,26 +31,20 @@ export class TaskService {
 
   createTask(task: iTask): Observable<iTask> {
     return this.http.post<iTask>(this.taskUrlCreate, task).pipe(
-      tap((newTask) => {
-        this.loadAllTasks(); // Ricarica tutte le task per aggiornare lo stato
-      })
+      tap(() => this.loadAllTasks())
     );
   }
 
   updateTaskStatus(taskId: number, status: string): Observable<iTaskResponseLight> {
     const url = `${this.taskUrl}/${taskId}/status`;
     return this.http.patch<iTaskResponseLight>(url, { status }).pipe(
-      tap(() => {
-        this.loadAllTasks(); // Ricarica tutte le task per aggiornare lo stato
-      })
+      tap(() => this.loadAllTasks())
     );
   }
 
   updateTask(task: iTask): Observable<iTask> {
     return this.http.put<iTask>(`${this.taskUrl}/${task.id}`, task).pipe(
-      tap(() => {
-        this.loadAllTasks(); // Ricarica tutte le task per aggiornare lo stato
-      })
+      tap(() => this.loadAllTasks())
     );
   }
 }

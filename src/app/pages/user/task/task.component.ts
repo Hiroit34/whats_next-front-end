@@ -1,3 +1,4 @@
+import { MessageService } from 'primeng/api';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { iCategory } from '../../../models/category';
@@ -6,6 +7,7 @@ import { iUser } from '../../../models/user';
 import { CategoryService } from '../../../services/category.service';
 import { TaskService } from '../../../services/task.service';
 import { UserService } from '../../../services/user.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-task',
@@ -23,12 +25,14 @@ export class TaskComponent implements OnInit {
   users: iUser[] = [];
   categories: iCategory[] = [];
   currentUserId: number | null = null;
+  taskSubscription!: Subscription;
 
   constructor(
     private taskService: TaskService,
     private fb: FormBuilder,
     private userService: UserService,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private messageService: MessageService
   ) {
     this.taskForm = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(50)]],
@@ -43,8 +47,18 @@ export class TaskComponent implements OnInit {
 
   ngOnInit() {
     this.loadCurrentUserId();
-    this.loadTasks();
     this.loadCategories();
+    this.taskSubscription = this.taskService.task$.subscribe(tasks => {
+      this.allTask = tasks;
+      this.updateTaskLists();
+    });
+    this.taskService.loadAllTasks(); // Load tasks initially
+  }
+
+  ngOnDestroy() {
+    if (this.taskSubscription) {
+      this.taskSubscription.unsubscribe();
+    }
   }
 
   loadCurrentUserId() {
@@ -78,26 +92,39 @@ export class TaskComponent implements OnInit {
   }
 
   onTaskMoveToTarget(event: any) {
-    event.items.forEach((task: iTaskResponseLight) => {
+    const invalidTasks = event.items.filter((task: iTaskResponseLight) => task.status !== 'IN_CORSO');
+    if (invalidTasks.length > 0) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Only tasks that are "IN_CORSO" can be moved to completed.' });
+      event.items = event.items.filter((task: iTaskResponseLight) => task.status === 'IN_CORSO');
+    }
+
+    const validTasks = event.items.filter((task: iTaskResponseLight) => task.status === 'IN_CORSO');
+    validTasks.forEach((task: iTaskResponseLight) => {
       this.updateTaskStatus(task, 'COMPLETATO');
     });
   }
 
   onTaskMoveToSource(event: any) {
     event.items.forEach((task: iTaskResponseLight) => {
-      this.updateTaskStatus(task, 'NON_COMPLETATO');
+      this.updateTaskStatus(task, 'IN_CORSO');
     });
   }
 
   onMoveAllToTarget(event: any) {
-    event.items.forEach((task: iTaskResponseLight) => {
+    const invalidTasks = event.items.filter((task: iTaskResponseLight) => task.status !== 'IN_CORSO');
+    if (invalidTasks.length > 0) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Only tasks that are "IN_CORSO" can be moved to completed.' });
+    }
+
+    const validTasks = event.items.filter((task: iTaskResponseLight) => task.status === 'IN_CORSO');
+    validTasks.forEach((task: iTaskResponseLight) => {
       this.updateTaskStatus(task, 'COMPLETATO');
     });
   }
 
   onMoveAllToSource(event: any) {
     event.items.forEach((task: iTaskResponseLight) => {
-      this.updateTaskStatus(task, 'NON_COMPLETATO');
+      this.updateTaskStatus(task, 'IN_CORSO');
     });
   }
 
@@ -106,9 +133,7 @@ export class TaskComponent implements OnInit {
       next: (updatedTask) => {
         console.log(`Task ${task.id} status updated to ${status}`);
         task.status = status;
-
-        this.availableTasks = this.allTask.filter(task => task.status !== 'COMPLETATO');
-        this.completedTasks = this.allTask.filter(task => task.status === 'COMPLETATO');
+        this.updateTaskLists(); // Update task lists after status change
       },
       error: (error) => {
         console.error(`Failed to update status for task ${task.id}`, error);
@@ -151,12 +176,20 @@ export class TaskComponent implements OnInit {
     }
   }
 
-  getUserName(userId: number): string {
-    const user = this.users.find(u => u.id === userId);
-    return user ? user.username : 'Unknown User';
-  }
-
   closeDialog() {
     this.displayDialog = false;
+  }
+
+  toggleStatus(task: iTaskResponseLight) {
+    if (task.status === 'NON_ACCETTATO') {
+      this.updateTaskStatus(task, 'IN_CORSO');
+    } else if (task.status === 'IN_CORSO') {
+      this.updateTaskStatus(task, 'NON_ACCETTATO');
+    }
+  }
+
+  private updateTaskLists() {
+    this.availableTasks = this.allTask.filter(task => task.status !== 'COMPLETATO');
+    this.completedTasks = this.allTask.filter(task => task.status === 'COMPLETATO');
   }
 }

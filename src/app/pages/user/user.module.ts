@@ -23,6 +23,9 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { PickListModule } from 'primeng/picklist';
 import { DialogModule } from 'primeng/dialog';
 import { ChipModule } from 'primeng/chip';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 
 @NgModule({
@@ -52,6 +55,11 @@ import { ChipModule } from 'primeng/chip';
     PickListModule,
     DialogModule,
     ChipModule,
+    InputSwitchModule,
+    ToastModule
+  ],
+  providers: [
+    MessageService
   ]
 })
 export class UserModule { }
