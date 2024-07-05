@@ -25,8 +25,9 @@ import { ChipModule } from 'primeng/chip';
 import { BadgeModule } from 'primeng/badge';
 import { CategoryAdminComponent } from './category-admin/category-admin.component';
 import { ToastModule } from 'primeng/toast';
-import { ConfirmPopupModule } from 'primeng/confirmpopup';
+//import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 
 @NgModule({
@@ -58,11 +59,11 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     ChipModule,
     BadgeModule,
     ToastModule,
-    ConfirmPopupModule
+    //ConfirmPopupModule,
+    ConfirmDialogModule
   ],
   providers: [
-    ConfirmationService,
-    MessageService
+    ConfirmationService
   ]
 })
 export class AdminModule { }

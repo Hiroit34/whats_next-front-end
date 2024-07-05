@@ -22,17 +22,19 @@ export class TaskService {
   loadAllTasks() {
     this.getAllTasks().subscribe(tasks => {
       this.taskSubject.next(tasks);
+      console.log("Queste sono le task: " + this.taskSubject)
     });
   }
 
   getAllTasks(): Observable<iTaskResponseLight[]> {
-    return this.http.get<iTaskResponseLight[]>(this.taskUrl);
+    return this.http.get<iTaskResponseLight[]>(this.taskUrl)
   }
 
   createTask(task: iTask): Observable<iTask> {
     return this.http.post<iTask>(this.taskUrlCreate, task).pipe(
-      tap(() => this.loadAllTasks())
+      tap(() => this.loadAllTasks(),)
     );
+
   }
 
   updateTaskStatus(taskId: number, status: string): Observable<iTaskResponseLight> {
@@ -45,6 +47,14 @@ export class TaskService {
   updateTask(task: iTask): Observable<iTask> {
     return this.http.put<iTask>(`${this.taskUrl}/${task.id}`, task).pipe(
       tap(() => this.loadAllTasks())
+    );
+  }
+
+  deleteTask(taskId: number): Observable<void> {
+    return this.http.delete<void>(`${this.taskUrl}/${taskId}/delete`).pipe(
+      tap(() => {
+        this.loadAllTasks(); // Ricarica tutte le task per aggiornare lo stato
+      })
     );
   }
 }

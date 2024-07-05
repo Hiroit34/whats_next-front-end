@@ -23,11 +23,24 @@ export class LoginComponent {
     private router: Router
   ){}
 
-  singIn() {
-    this.authSvc.login(this.loginData)
-    .subscribe(d => {
-      this.router.navigate(['/'])
-    })
+  signIn() {
+    this.authSvc.login(this.loginData).subscribe({
+      next: () => {
+        const role = this.authSvc.getRole();
+        if (role === 'ADMIN') {
+          this.router.navigate(['/admin/task']);
+        } else if (role === 'USER') {
+          this.router.navigate(['/user/task']);
+        } else {
+          // Navigate to a default route or show an error if role is unrecognized
+          this.router.navigate(['/']);
+        }
+      },
+      error: (error) => {
+        // Handle login error
+        console.error('Login error:', error);
+      }
+    });
   }
 
 }

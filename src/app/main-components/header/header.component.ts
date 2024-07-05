@@ -61,6 +61,15 @@ export class HeaderComponent {
 
   private updateMenuItems() {
     console.log('Updating menu items with role:', this.userRole); // Debug log
+    this.items = [
+      {
+          label: 'Home',
+          icon: 'pi pi-home',
+          command: () => {
+            this.router.navigate(['/'])
+          }
+      }
+    ]
     this.avatarItems = [
       {
         label: 'Documents',
@@ -68,25 +77,26 @@ export class HeaderComponent {
           {
             label: 'New task',
             icon: 'pi pi-plus',
-            shortcut: '⌘+N',
             command: () => {
               this.router.navigate(['/admin/admin-create']);
             },
             visible: this.userRole === 'ADMIN', // Visibile solo per admin
           },
+          // {
+          //   label: 'New task user',
+          //   icon: 'pi pi-plus',
+          //   command: () => {
+          //     this.router.navigate(['/user/create']);
+          //   },
+          //   visible: this.userRole === 'USER', // Visibile solo per utenti
+          // },
           {
-            label: 'New task user',
+            label: 'New Project',
             icon: 'pi pi-plus',
-            shortcut: '⌘+N',
             command: () => {
-              this.router.navigate(['/user/create']);
+              this.router.navigate(['/admin/project'])
             },
-            visible: this.userRole === 'USER', // Visibile solo per utenti
-          },
-          {
-            label: 'Search',
-            icon: 'pi pi-search',
-            shortcut: '⌘+S',
+            visible: this.userRole === 'ADMIN'
           },
           {
             label: 'All Task',
@@ -115,13 +125,14 @@ export class HeaderComponent {
             command: () => {
               this.router.navigate(['/user/profile-user']);
             },
+
           },
           {
             label: 'Logout',
             icon: 'pi pi-sign-out',
             command: () => {
               this.authSvc.logout();
-              this.router.navigate(['/']);
+              this.router.navigate(['/auth/login']);
             },
           },
         ],

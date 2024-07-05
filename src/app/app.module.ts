@@ -43,7 +43,7 @@ import { ToastModule } from 'primeng/toast';
     ReactiveFormsModule,
     DropdownModule,
     MultiSelectModule,
-    ToastModule
+    ToastModule,
   ],
   providers: [
     AuthService,

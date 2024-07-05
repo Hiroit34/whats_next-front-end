@@ -1,6 +1,8 @@
-<p-menubar [model]="items">
-  <ng-template pTemplate="start">
-    <!-- Logo or Brand -->
+<p-menubar class="menu__logo" [model]="items">
+  <ng-template class="" pTemplate="start">
+    <div class="container__logo">
+      <img class="logo" src="../../../assets/Logo4.png" alt="Logo Image">
+    </div>
   </ng-template>
   <ng-template pTemplate="item" let-item let-root="root">
     <a *ngIf="item.visible !== false" pRipple [routerLink]="item.route" class="flex align-items-center p-menuitem-link">

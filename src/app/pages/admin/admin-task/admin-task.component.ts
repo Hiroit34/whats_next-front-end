@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { iTaskResponseLight } from '../../../models/task-response-light';
 import { TaskService } from '../../../services/task.service';
@@ -6,9 +6,8 @@ import { iUser } from '../../../models/user';
 import { iCategory } from '../../../models/category';
 import { UserService } from '../../../services/user.service';
 import { CategoryService } from '../../../services/category.service';
-import { iTask } from '../../../models/task';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { Subscription } from 'rxjs';
+import { iTask } from '../../../models/task';
 
 @Component({
   selector: 'app-admin-task',
@@ -16,7 +15,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./admin-task.component.css'],
   providers: [ConfirmationService, MessageService]
 })
-export class AdminTaskComponent implements OnInit {
+export class AdminTaskComponent {
   allTask: iTaskResponseLight[] = [];
   availableTasks: iTaskResponseLight[] = [];
   completedTasks: iTaskResponseLight[] = [];
@@ -25,8 +24,7 @@ export class AdminTaskComponent implements OnInit {
   selectedTask: iTaskResponseLight | undefined;
   users: iUser[] = [];
   categories: iCategory[] = [];
-  selectedUsers: iUser[] = [];
-  private taskSubscription!: Subscription;
+  selectedUsers: iUser[] = []; // Initialize the selectedUsers array
 
   constructor(
     private taskService: TaskService,
@@ -48,35 +46,39 @@ export class AdminTaskComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loadTasks();
     this.loadUsers();
     this.loadCategories();
-    this.taskSubscription = this.taskService.task$.subscribe(tasks => {
-      this.allTask = tasks.map(task => ({
-        ...task,
-        combinedField: `${task.title} ${task.category?.categoryType || ''}`
-      }));
-      this.updateTaskLists();
-    });
-    this.taskService.loadAllTasks();
   }
 
-  ngOnDestroy() {
-    if (this.taskSubscription) {
-      this.taskSubscription.unsubscribe();
-    }
+  loadTasks() {
+    this.taskService.getAllTasks().subscribe((tasks) => {
+      this.allTask = tasks.map((task) => ({
+        ...task,
+        combinedField: `${task.title} ${task.category?.categoryType || ''} ${task.status || ''}`
+      }));
+      this.availableTasks = this.allTask.filter(
+        (task) => task.status !== 'COMPLETATO'
+      );
+      this.completedTasks = this.allTask.filter(
+        (task) => task.status === 'COMPLETATO'
+      );
+      console.log('Loaded tasks:', this.allTask);
+    });
   }
 
   loadUsers() {
-    this.userService.getAllUser().subscribe(users => {
+    this.userService.getAllUser().subscribe((users) => {
       this.users = users;
+      console.log('Loaded users:', this.users);
     });
   }
 
   loadCategories() {
-    this.categoryService.getAllCategory().subscribe(categories => {
-      this.categories = categories.map(cat => ({
+    this.categoryService.getAllCategory().subscribe((categories) => {
+      this.categories = categories.map((cat) => ({
         ...cat,
-        catField: `${cat.categoryType || ''}`
+        catField: `${cat.categoryType || ''}`,
       }));
     });
   }
@@ -107,12 +109,12 @@ export class AdminTaskComponent implements OnInit {
 
   updateTaskStatus(task: iTaskResponseLight, status: string) {
     this.taskService.updateTaskStatus(task.id, status).subscribe({
-      next: updatedTask => {
+      next: (updatedTask) => {
         console.log(`Task ${task.id} status updated to ${status}`);
         task.status = status;
-        this.taskService.loadAllTasks(); // Ensure tasks are reloaded after status update
+        this.updateTaskLists(); // Update task lists after status change
       },
-      error: error => {
+      error: (error) => {
         console.error(`Failed to update status for task ${task.id}`, error);
       }
     });
@@ -120,21 +122,26 @@ export class AdminTaskComponent implements OnInit {
 
   openEditDialog(task: iTaskResponseLight) {
     this.selectedTask = task;
-    const userIds = task.users.map(user => user.id);
-    this.selectedUsers = this.users.filter(user => userIds.includes(user.id));
+    const userIds = task.users.map((user) => user.id);
+    this.selectedUsers = this.users.filter((user) => userIds.includes(user.id)); // Set selected users
+    console.log('Editing Task:', task.title); // Debug: Verifica i dati della task che stai modificando
+    console.log('User IDs:', userIds); // Debug: Verifica che gli ID degli utenti siano corretti
     this.taskForm.patchValue({
-      title: task.title,
+      title: task.title, // Assicurati di usare `title`
       description: task.description,
       status: task.status,
-      category: task.category?.id || null,
-      userIds: userIds
+      category: task.category?.id || null, // Assicurati che l'ID della categoria venga impostato correttamente
+      userIds: userIds, // Passa solo gli ID degli utenti
     });
+    console.log('Form Value after patch:', this.taskForm.value); // Debug: Verifica i valori del form dopo il patch
     this.displayDialog = true;
   }
 
   onEditTask() {
     if (this.taskForm.valid && this.selectedTask) {
-      const category = this.categories.find(cat => cat.id === this.taskForm.value.category);
+      const category = this.categories.find(
+        (cat) => cat.id === this.taskForm.value.category
+      );
 
       const updatedTask: iTask = {
         id: this.selectedTask.id,
@@ -143,20 +150,24 @@ export class AdminTaskComponent implements OnInit {
         status: this.taskForm.value.status,
         category: {
           id: category?.id || 0,
-          categoryType: category?.categoryType || ''
+          categoryType: category?.categoryType || '', // Assicurati di includere `categoryType`
         },
         userIds: this.taskForm.value.userIds,
       };
 
+      console.log(
+        'Updated Task Payload:',
+        JSON.stringify(updatedTask, null, 2)
+      ); // Debug: Verifica il payload JSON
       this.taskService.updateTask(updatedTask).subscribe({
-        next: res => {
+        next: (res) => {
           console.log('Task updated successfully:', res);
           this.displayDialog = false;
-          this.taskService.loadAllTasks();
+          this.loadTasks();
         },
-        error: err => {
+        error: (err) => {
           console.error('Error updating task:', err);
-        }
+        },
       });
     }
   }
@@ -164,7 +175,6 @@ export class AdminTaskComponent implements OnInit {
   closeDialog() {
     this.displayDialog = false;
   }
-
 
   confirm1(event: Event) {
     console.log('Confirm1 clicked'); // Aggiunto per debug
@@ -203,12 +213,35 @@ export class AdminTaskComponent implements OnInit {
     });
   }
 
+  confirmDelete(task: iTaskResponseLight) {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete this task?',
+      header: 'Delete Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.deleteTask(task);
+      },
+      reject: () => {
+        this.messageService.add({ severity: 'info', summary: 'Cancelled', detail: 'Task not deleted' });
+      }
+    });
+  }
+
+  deleteTask(task: iTaskResponseLight) {
+    this.taskService.deleteTask(task.id).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Deleted', detail: 'Task deleted successfully' });
+        this.loadTasks(); // Refresh the task list after deletion
+      },
+      error: (err) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete task' });
+        console.error('Error deleting task:', err);
+      }
+    });
+  }
+
   private updateTaskLists() {
-    this.availableTasks = this.allTask.filter(
-      (task) => task.status !== 'COMPLETATO'
-    );
-    this.completedTasks = this.allTask.filter(
-      (task) => task.status === 'COMPLETATO'
-    );
+    this.availableTasks = this.allTask.filter(task => task.status !== 'COMPLETATO');
+    this.completedTasks = this.allTask.filter(task => task.status === 'COMPLETATO');
   }
 }

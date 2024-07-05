@@ -5,11 +5,13 @@ import { HomeRoutingModule } from './home-routing.module';
 import { HomeComponent } from './home.component';
 import { ButtonModule } from 'primeng/button';
 import { AnimateOnScrollModule } from 'primeng/animateonscroll';
+import { FooterComponent } from '../../main-components/footer/footer.component';
 
 
 @NgModule({
   declarations: [
-    HomeComponent
+    HomeComponent,
+    FooterComponent
   ],
   imports: [
     CommonModule,

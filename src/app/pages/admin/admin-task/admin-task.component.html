@@ -78,15 +78,26 @@
         <span class="font-bold text-900">
           {{ task.status }}
         </span>
-        <button
-          pButton
-          icon="pi pi-pencil"
-          class="p-button-rounded p-button-info"
+        <p-button
+          label="Modifica"
+          [raised]="true"
+          icon="pi pi-pen-to-square"
           (click)="openEditDialog(task)"
-        ></button>
+        />
+        <p-button
+          *ngIf="task.status === 'COMPLETATO'"
+          label="Elimina"
+          icon="pi pi-trash"
+          [raised]="true"
+          severity="danger"
+          (click)="confirmDelete(task)"
+          >
+        </p-button>
       </div>
     </ng-template>
   </p-pickList>
+
+  <p-confirmDialog></p-confirmDialog>
 
   <p-dialog
     header="Edit Task"
@@ -199,7 +210,7 @@
       </div>
 
       <div class="flex justify-content-center p-field mt-2">
-        <p-confirmPopup>
+
           <ng-template pTemplate="content" let-message>
             <div
               class="flex flex-column align-items-center w-full gap-1 border-bottom-1 surface-border mb-3"
@@ -208,7 +219,7 @@
               <p>{{ message.message }}</p>
             </div>
           </ng-template>
-        </p-confirmPopup>
+
         <p-button
           pRipple
           type="submit"
