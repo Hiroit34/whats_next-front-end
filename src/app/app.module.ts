@@ -20,6 +20,8 @@ import { MenuModule } from 'primeng/menu';
 import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ToastModule } from 'primeng/toast';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextareaModule } from 'primeng/inputtextarea';
 
 @NgModule({
   declarations: [
@@ -44,6 +46,9 @@ import { ToastModule } from 'primeng/toast';
     DropdownModule,
     MultiSelectModule,
     ToastModule,
+    DialogModule,
+    InputTextModule,
+    InputTextareaModule
   ],
   providers: [
     AuthService,

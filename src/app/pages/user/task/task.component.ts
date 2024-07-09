@@ -37,7 +37,7 @@ export class TaskComponent implements OnInit {
     this.taskForm = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(50)]],
       description: ['', [Validators.maxLength(50)]],
-      status: ['NON_COMPLETATO', Validators.required],
+      status: ['NON_ACCETTATO', Validators.required],
       category: [null, Validators.required],
       userIds: [[], Validators.required],
       isShared: [false],
@@ -77,7 +77,7 @@ export class TaskComponent implements OnInit {
   }
 
   loadTasks() {
-    this.taskService.getAllTasks().subscribe(tasks => {
+    this.taskService.task$.subscribe(tasks => {
       this.allTask = tasks;
       this.availableTasks = tasks.filter(task => task.status !== 'COMPLETATO');
       this.completedTasks = tasks.filter(task => task.status === 'COMPLETATO');

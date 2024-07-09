@@ -8,6 +8,7 @@ import { UserService } from '../../../services/user.service';
 import { CategoryService } from '../../../services/category.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { iTask } from '../../../models/task';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-admin-task',
@@ -25,6 +26,7 @@ export class AdminTaskComponent {
   users: iUser[] = [];
   categories: iCategory[] = [];
   selectedUsers: iUser[] = []; // Initialize the selectedUsers array
+  private unsubscribe$ = new Subject<void>();
 
   constructor(
     private taskService: TaskService,
@@ -51,36 +53,47 @@ export class AdminTaskComponent {
     this.loadCategories();
   }
 
+  ngOnDestroy() {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
   loadTasks() {
-    this.taskService.getAllTasks().subscribe((tasks) => {
-      this.allTask = tasks.map((task) => ({
-        ...task,
-        combinedField: `${task.title} ${task.category?.categoryType || ''} ${task.status || ''}`
-      }));
-      this.availableTasks = this.allTask.filter(
-        (task) => task.status !== 'COMPLETATO'
-      );
-      this.completedTasks = this.allTask.filter(
-        (task) => task.status === 'COMPLETATO'
-      );
-      console.log('Loaded tasks:', this.allTask);
-    });
+    this.taskService.getAllTasks()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((tasks) => {
+        this.allTask = tasks.map((task) => ({
+          ...task,
+          combinedField: `${task.title} ${task.category?.categoryType || ''} ${task.status || ''}`
+        }));
+        this.availableTasks = this.allTask.filter(
+          (task) => task.status !== 'COMPLETATO'
+        );
+        this.completedTasks = this.allTask.filter(
+          (task) => task.status === 'COMPLETATO'
+        );
+        console.log('Loaded tasks:', this.allTask);
+      });
   }
 
   loadUsers() {
-    this.userService.getAllUser().subscribe((users) => {
-      this.users = users;
-      console.log('Loaded users:', this.users);
-    });
+    this.userService.getAllUser()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((users) => {
+        this.users = users;
+        console.log('Loaded users:', this.users);
+      });
   }
 
   loadCategories() {
-    this.categoryService.getAllCategory().subscribe((categories) => {
-      this.categories = categories.map((cat) => ({
-        ...cat,
-        catField: `${cat.categoryType || ''}`,
-      }));
-    });
+    this.categoryService.category$
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((categories) => {
+        this.categories = categories?.map((cat) => ({
+          ...cat,
+          catField: `${cat.categoryType || ''}`,
+        }));
+      });
   }
 
   onTaskMoveToTarget(event: any) {

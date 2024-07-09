@@ -1,4 +1,5 @@
 export interface iCategory {
   id: number,
-  categoryType: String
+  categoryType: String,
+  description: String
 }

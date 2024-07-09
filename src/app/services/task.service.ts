@@ -34,14 +34,11 @@ export class TaskService {
     return this.http.post<iTask>(this.taskUrlCreate, task).pipe(
       tap(() => this.loadAllTasks(),)
     );
-
   }
 
   updateTaskStatus(taskId: number, status: string): Observable<iTaskResponseLight> {
     const url = `${this.taskUrl}/${taskId}/status`;
-    return this.http.patch<iTaskResponseLight>(url, { status }).pipe(
-      tap(() => this.loadAllTasks())
-    );
+    return this.http.patch<iTaskResponseLight>(url, { status })
   }
 
   updateTask(task: iTask): Observable<iTask> {

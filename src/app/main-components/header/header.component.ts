@@ -1,9 +1,12 @@
+import { CategoryService } from './../../services/category.service';
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { AuthService } from '../../services/auth.service';
 import { iUser } from '../../models/user';
-import { Observable, Subscription } from 'rxjs';
+import { filter, Observable, Subscription } from 'rxjs';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { iCategory } from '../../models/category';
 
 @Component({
   selector: 'app-header',
@@ -20,20 +23,31 @@ export class HeaderComponent {
   lastName: string = '';
   roleSubscription!: Subscription;
   userSubscription!: Subscription;
+  visible: boolean = false;
+  projectForm: FormGroup;
+  currentUrl: string = '';
 
-  constructor(private router: Router, private authSvc: AuthService) {
+  constructor(
+    private router: Router,
+    private authSvc: AuthService,
+    private fb: FormBuilder,
+    private categoryService: CategoryService
+  ) {
     this.user$ = this.authSvc.user$;
+
+    this.projectForm = this.fb.group({
+      projectName: ['', Validators.required],
+      projectDescription: ['', Validators.required]
+    });
   }
 
   ngOnInit() {
     this.roleSubscription = this.authSvc.userRole$.subscribe((role) => {
-      console.log('User role updated:', role); // Debug log
       this.userRole = role;
       this.updateMenuItems(); // Aggiorna i menu items quando il ruolo cambia
     });
 
     this.userSubscription = this.authSvc.user$.subscribe(user => {
-      console.log('User updated:', user); // Debug log
       if (user) {
         this.firstName = user.firstName;
         this.lastName = user.lastName;
@@ -47,7 +61,12 @@ export class HeaderComponent {
     });
 
     this.extractUserInfo();
-    console.log('User info extracted:', this.firstName, this.lastName, this.username); // Debug log
+    // Subscribe to router events to get the current URL
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.updateMenuItems();
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -60,15 +79,12 @@ export class HeaderComponent {
   }
 
   private updateMenuItems() {
-    console.log('Updating menu items with role:', this.userRole); // Debug log
+    const currentUrl = this.router.url;
+    let isCreateTaskPage = '/admin/admin-create'
+
+    isCreateTaskPage === currentUrl;
+
     this.items = [
-      {
-          label: 'Home',
-          icon: 'pi pi-home',
-          command: () => {
-            this.router.navigate(['/'])
-          }
-      }
     ]
     this.avatarItems = [
       {
@@ -82,21 +98,11 @@ export class HeaderComponent {
             },
             visible: this.userRole === 'ADMIN', // Visibile solo per admin
           },
-          // {
-          //   label: 'New task user',
-          //   icon: 'pi pi-plus',
-          //   command: () => {
-          //     this.router.navigate(['/user/create']);
-          //   },
-          //   visible: this.userRole === 'USER', // Visibile solo per utenti
-          // },
           {
             label: 'New Project',
             icon: 'pi pi-plus',
-            command: () => {
-              this.router.navigate(['/admin/project'])
-            },
-            visible: this.userRole === 'ADMIN'
+            command: () => this.showDialog(),
+            visible: this.userRole === 'ADMIN' && !(isCreateTaskPage === currentUrl)
           },
           {
             label: 'All Task',
@@ -141,7 +147,39 @@ export class HeaderComponent {
         separator: true,
       },
     ];
-    console.log('Avatar items:', this.avatarItems); // Debug log
+  }
+
+  showDialog() {
+    console.log('Progetto aperto');
+
+    this.visible = true;
+  }
+
+  createProject() {
+    if (this.projectForm.valid) {
+      const projectName = this.projectForm.get('projectName')?.value;
+      const projectDescription = this.projectForm.get('projectDescription')?.value;
+      const newProject: iCategory = {
+        id: 0,
+        categoryType: projectName,
+        description: projectDescription
+      };
+
+      this.categoryService.createCategory(newProject).subscribe({
+
+        next: (category) => {
+          console.log('clicked');
+          console.log('Category created', category )
+          this.visible = false;
+          this.projectForm.reset();
+        },
+        error: (error) => {
+          console.error('Errore nella creazione del progetto.', error);
+        }
+      })
+    } else {
+      console.error('errore nella creazione del progetto. project.From non valido.')
+    }
   }
 
   private extractUserInfo() {
@@ -149,9 +187,7 @@ export class HeaderComponent {
     if (accessData) {
       const parsedData = JSON.parse(accessData);
       this.firstName = parsedData.user.firstName;
-      console.log(parsedData.user.firstName); // Debug log
       this.lastName = parsedData.user.lastName;
-      console.log(parsedData.user.lastName); // Debug log
       this.username = parsedData.user.username;
       const roles = parsedData.user.roles.map((role: any) => role.typeRole);
       this.userRole = roles.includes('ADMIN') ? 'ADMIN' : 'USER';

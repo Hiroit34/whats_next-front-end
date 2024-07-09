@@ -1,7 +1,7 @@
 <p-menubar class="menu__logo" [model]="items">
   <ng-template class="" pTemplate="start">
     <div class="container__logo">
-      <img class="logo" src="../../../assets/Logo4.png" alt="Logo Image">
+      <img routerLink="/" class="logo" src="../../../assets/Logo4.png" alt="Logo Image">
     </div>
   </ng-template>
   <ng-template pTemplate="item" let-item let-root="root">
@@ -43,3 +43,27 @@
     </div>
   </ng-template>
 </p-menubar>
+<p-dialog header="New Project" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }">
+  <span class="p-text-secondary block mb-5">Create a new project.</span>
+  <form [formGroup]="projectForm">
+    <div class="p-field mt-5">
+      <label for="projectName" class="font-semibold w-6rem mb-3">Project Name</label>
+      <input pInputText id="projectName" formControlName="projectName" class="flex-auto" autocomplete="off" />
+    </div>
+    <div class="p-field mt-5">
+      <label for="projectDescription" class="font-semibold w-6rem mb-3" for="description"
+        >Description</label
+      >
+      <textarea
+        rows="5"
+        cols="30"
+        pInputTextarea
+        formControlName="projectDescription">
+    </textarea>
+    </div>
+    <div class="flex justify-content-end gap-2">
+      <p-button label="Cancel" severity="secondary" (click)="visible = false" />
+      <p-button label="Save" (click)="createProject()" />
+    </div>
+  </form>
+</p-dialog>

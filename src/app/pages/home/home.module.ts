@@ -6,6 +6,9 @@ import { HomeComponent } from './home.component';
 import { ButtonModule } from 'primeng/button';
 import { AnimateOnScrollModule } from 'primeng/animateonscroll';
 import { FooterComponent } from '../../main-components/footer/footer.component';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputTextareaModule } from 'primeng/inputtextarea';
 
 
 @NgModule({
@@ -18,6 +21,10 @@ import { FooterComponent } from '../../main-components/footer/footer.component';
     HomeRoutingModule,
     ButtonModule,
     AnimateOnScrollModule,
+    DialogModule,
+    ButtonModule,
+    InputTextModule,
+    InputTextareaModule
   ]
 })
 export class HomeModule { }

@@ -5,19 +5,19 @@ import { UserGuard } from './core/guard/user.guard';
 
 const routes: Routes = [
   { path: '',
-    loadChildren: () => import('./pages/home/home.module').then(m => { console.log('HomeModule loaded'); return m.HomeModule; }),
+    loadChildren: () => import('./pages/home/home.module').then(m => { return m.HomeModule; }),
 
   },
   { path: 'auth',
-    loadChildren: () => import('./auth/auth.module').then(m => { console.log('AuthModule loaded'); return m.AuthModule; }),
+    loadChildren: () => import('./auth/auth.module').then(m => { return m.AuthModule; }),
 
   },
   { path: 'admin',
-    loadChildren: () => import('./pages/admin/admin.module').then(m => { console.log('AdminModule loaded'); return m.AdminModule; }),
+    loadChildren: () => import('./pages/admin/admin.module').then(m => { return m.AdminModule; }),
     canActivate: [AdminGuard]
   },
   { path: 'user',
-    loadChildren: () => import('./pages/user/user.module').then(m => { console.log('UserModule loaded'); return m.UserModule; }),
+    loadChildren: () => import('./pages/user/user.module').then(m => { return m.UserModule; }),
     canActivate: [UserGuard]
   }
 ];

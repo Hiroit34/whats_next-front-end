@@ -1,97 +1,108 @@
+
 <div
-  class="h-50rem surface-card p-4 shadow-2 border-round w-full flex justify-content-center mt-8"
+[style]="{ width: '30rem', margin: 'auto' }"
+class="h-50rem w-35rem p-4 border-round flex-nowrap justify-content-center mt-5"
 >
-  <form class="h-auto" [formGroup]="taskForm" (ngSubmit)="onSubmit()">
-    <div class="p-field">
-      <label class="block text-900 font-medium mb-2" for="title">Title</label>
-      <input id="title" type="text" pInputText formControlName="title" />
-      <div
-        *ngIf="taskForm.get('title')?.invalid && taskForm.get('title')?.touched"
-      >
-        <small
-          class="p-error"
-          *ngIf="taskForm.get('title')?.hasError('required')"
-          >Title is required.</small
+<h1 class="block">Crea una nuova task</h1>
+<div class="w-35rem w-35rem surface-card p-4 shadow-2 border-round">
+    <form class="h-auto" [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+
+      <div class="p-field">
+        <label class="block text-900 font-medium mb-2" for="title">Title</label>
+        <input [style]="{ width: '100%' }" id="title" type="text" pInputText formControlName="title" />
+        <div
+          *ngIf="
+            taskForm.get('title')?.invalid && taskForm.get('title')?.touched
+          "
         >
-        <small
-          class="p-error"
-          *ngIf="taskForm.get('title')?.hasError('maxLength')"
-          >Title cannot exceed 50 characters.</small
-        >
+          <small
+            class="p-error"
+            *ngIf="taskForm.get('title')?.hasError('required')"
+            >Title is required.</small
+          >
+          <small
+            class="p-error"
+            *ngIf="taskForm.get('title')?.hasError('maxLength')"
+            >Title cannot exceed 50 characters.</small
+          >
+        </div>
       </div>
-    </div>
 
-    <div class="p-field mt-5">
-      <label class="block text-900 font-medium mb-2" for="description"
-        >Description</label
-      >
-      <textarea
-        rows="5"
-        cols="30"
-        id="description"
-        pInputTextarea
-        formControlName="description"
-      ></textarea>
-      <div
-        *ngIf="
-          taskForm.get('description')?.invalid &&
-          taskForm.get('description')?.touched
-        "
-      >
-        <small
-          class="p-error"
-          *ngIf="taskForm.get('description')?.hasError('maxLength')"
-          >Description cannot exceed 50 characters.</small
+      <div class="p-field mt-5">
+        <label class="block text-900 font-medium mb-2" for="description"
+          >Description</label
         >
+        <textarea
+          [style]="{ width: '100%' }"
+          rows="5"
+          cols="30"
+          id="description"
+          pInputTextarea
+          formControlName="description"
+        ></textarea>
+        <div
+          *ngIf="
+            taskForm.get('description')?.invalid &&
+            taskForm.get('description')?.touched
+          "
+        >
+          <small
+            class="p-error"
+            *ngIf="taskForm.get('description')?.hasError('maxLength')"
+            >Description cannot exceed 50 characters.</small
+          >
+        </div>
       </div>
-    </div>
 
-    <div class="p-field mt-5">
-      <label class="block text-900 font-medium mb-2" for="category"
-        >Category</label
-      >
-      <p-dropdown
-        id="category"
-        [options]="category"
-        optionLabel="categoryType"
-        optionValue="id"
-        formControlName="category"
-        placeholder="Select a Category"
-      ></p-dropdown>
-    </div>
+      <div class="p-field mt-5">
+        <label class="block text-900 font-medium mb-2" for="category"
+          >Category</label
+        >
+        <p-dropdown
+          [style]="{ width: '100%' }"
+          id="category"
+          [options]="category"
+          optionLabel="categoryType"
+          optionValue="id"
+          formControlName="category"
+          placeholder="Select a Category"
+        ></p-dropdown>
+      </div>
 
-    <div class="p-field mt-5">
-      <label class="block text-900 font-medium mb-2" for="userIds"
-        >Assign to:</label
-      >
-      <p-multiSelect
-        id="userIds"
-        [options]="users"
-        optionLabel="username"
-        optionValue="id"
-        formControlName="userIds"
-      >
-        <ng-template let-country pTemplate="footer">
-          <div class="py-2 px-3">
-            <b>
-              {{ selectedUsers ? selectedUsers.length : 0 }}
-            </b>
-            item{{
-              (selectedUsers ? selectedUsers.length : 0) > 1 ? "s" : ""
-            }}
-            selected.
-          </div>
-        </ng-template>
-      </p-multiSelect>
-    </div>
+      <div class="p-field mt-5">
+        <label class="block text-900 font-medium mb-2" for="userIds"
+          >Assign to:</label
+        >
+        <p-multiSelect
+          [style]="{ width: '100%' }"
+          id="userIds"
+          [options]="users"
+          optionLabel="username"
+          optionValue="id"
+          formControlName="userIds"
+        >
+          <ng-template let-country pTemplate="footer">
+            <div class="py-2 px-3">
+              <b>
+                {{ selectedUsers ? selectedUsers.length : 0 }}
+              </b>
+              item{{
+                (selectedUsers ? selectedUsers.length : 0) > 1 ? "s" : ""
+              }}
+              selected.
+            </div>
+          </ng-template>
+        </p-multiSelect>
+      </div>
 
-    <div class="p-field mt-5">
-      <button
-        pButton
-        type="submit"
-        label="Create Task"
-        [disabled]="taskForm.invalid"
-      ></button>
-    </div>
-  </form>
+      <div class="p-field mt-5">
+        <button
+          pButton
+          type="submit"
+          label="Create Task"
+          [disabled]="taskForm.invalid"
+        ></button>
+      </div>
+    </form>
+  </div>
 </div>

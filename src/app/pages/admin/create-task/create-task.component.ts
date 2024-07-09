@@ -45,7 +45,8 @@ export class CreateTaskComponent implements OnInit {
     this.categorySvc.getAllCategory().subscribe(res => {
       this.category = res.map(category => ({
         id: category.id,
-        categoryType: category.categoryType
+        categoryType: category.categoryType,
+        description: category.description
       }));
       console.log(this.category);
     });
