@@ -7,6 +7,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { BehaviorSubject, Observable, map, tap } from 'rxjs';
 import { environment } from '../../environments/environment.development';
 import { iRole } from '../models/role';
+import { TaskService } from './task.service';
 
 
 type AccessData = {
@@ -21,7 +22,7 @@ export class AuthService {
 
   constructor(
     private http:HttpClient,
-    private router:Router
+    private router:Router,
   ) {
     this.restoreUser()
   }

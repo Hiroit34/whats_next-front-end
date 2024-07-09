@@ -36,6 +36,10 @@ export class TaskService {
     );
   }
 
+  clearTasks() {
+    this.taskSubject.next([]);
+  }
+
   updateTaskStatus(taskId: number, status: string): Observable<iTaskResponseLight> {
     const url = `${this.taskUrl}/${taskId}/status`;
     return this.http.patch<iTaskResponseLight>(url, { status })
@@ -48,10 +52,21 @@ export class TaskService {
   }
 
   deleteTask(taskId: number): Observable<void> {
-    return this.http.delete<void>(`${this.taskUrl}/${taskId}/delete`).pipe(
+    return this.http.delete<void>(`${this.taskUrl}/${taskId}/delete`, { responseType: 'text' as 'json' }).pipe(
       tap(() => {
-        this.loadAllTasks(); // Ricarica tutte le task per aggiornare lo stato
+        this.removeTaskFromList(taskId); // Ricarica tutte le task per aggiornare lo stato
       })
     );
   }
+
+  resetTasks() {
+    this.taskSubject.next([]);
+  }
+
+  private removeTaskFromList(taskId: number) {
+    const currentTasks = this.taskSubject.getValue();
+    const updatedTasks = currentTasks.filter(task => task.id !== taskId);
+    this.taskSubject.next(updatedTasks);
+  }
+
 }

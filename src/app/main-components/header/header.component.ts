@@ -1,3 +1,4 @@
+import { LoginComponent } from './../../auth/login/login.component';
 import { CategoryService } from './../../services/category.service';
 import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
@@ -7,6 +8,7 @@ import { iUser } from '../../models/user';
 import { filter, Observable, Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { iCategory } from '../../models/category';
+import { TaskService } from '../../services/task.service';
 
 @Component({
   selector: 'app-header',
@@ -31,7 +33,8 @@ export class HeaderComponent {
     private router: Router,
     private authSvc: AuthService,
     private fb: FormBuilder,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private taskService: TaskService
   ) {
     this.user$ = this.authSvc.user$;
 
@@ -137,7 +140,7 @@ export class HeaderComponent {
             label: 'Logout',
             icon: 'pi pi-sign-out',
             command: () => {
-              this.authSvc.logout();
+              this.logout();
               this.router.navigate(['/auth/login']);
             },
           },
@@ -147,6 +150,11 @@ export class HeaderComponent {
         separator: true,
       },
     ];
+  }
+
+  logout() {
+    this.authSvc.logout();
+    this.taskService.resetTasks(); // Resetta le task al logout
   }
 
   showDialog() {
