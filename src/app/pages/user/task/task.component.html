@@ -1,3 +1,28 @@
+<div
+class="mx-8 mt-5 flex align-items-start flex-column lg:justify-content-between lg:flex-row"
+>
+<div>
+  <div class="font-medium text-3xl text-900">Benvenuto</div>
+  <div class="flex align-items-center text-700 flex-wrap">
+    <div class="mr-5 flex align-items-center mt-3">
+      <i class="pi pi-globe mr-2"></i>
+      <span>{{ allTask.length }} tasks</span>
+    </div>
+  </div>
+</div>
+<div class="mt-3 lg:mt-0">
+  <button
+  routerLink="/admin/task"
+    pButton
+    pRipple
+    label="Nuova Task"
+    class="p-button-outlined mr-2"
+    icon="pi pi-list-check"
+    disabled
+  ></button>
+</div>
+</div>
+
 <div class="mt-5">
   <p-pickList
     [source]="availableTasks"

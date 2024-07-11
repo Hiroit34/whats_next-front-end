@@ -1,14 +1,15 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { iTaskResponseLight } from '../../../models/task-response-light';
+import { iTaskResponseLight } from '../../../models/TaskInterface/task-response-light';
 import { TaskService } from '../../../services/task.service';
 import { iUser } from '../../../models/user';
-import { iCategory } from '../../../models/category';
 import { UserService } from '../../../services/user.service';
 import { CategoryService } from '../../../services/category.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { iTask } from '../../../models/task';
+
 import { Subject, takeUntil } from 'rxjs';
+import { iCategory } from '../../../models/CategoryInterface/category';
+import { iTask } from '../../../models/TaskInterface/task';
 
 @Component({
   selector: 'app-admin-task',
@@ -38,8 +39,8 @@ export class AdminTaskComponent {
   ) {
     this.taskForm = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(50)]],
-      description: ['', [Validators.maxLength(50)]],
-      status: ['NON_COMPLETATO', Validators.required],
+      description: ['', [Validators.required, Validators.maxLength(500)]],
+      status: ['NON_ACCETTATO', Validators.required],
       category: [null, Validators.required],
       userIds: [[], Validators.required],
       isShared: [false],
@@ -122,7 +123,7 @@ export class AdminTaskComponent {
 
   updateTaskStatus(task: iTaskResponseLight, status: string) {
     this.taskService.updateTaskStatus(task.id, status).subscribe({
-      next: (updatedTask) => {
+      next: () => {
         console.log(`Task ${task.id} status updated to ${status}`);
         task.status = status;
         this.updateTaskLists(); // Update task lists after status change

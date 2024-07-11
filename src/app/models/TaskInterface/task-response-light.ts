@@ -1,5 +1,6 @@
-import { iCategory } from "./category";
-import { UserResponseLight } from "./user-response-light";
+
+import { iCategory } from "../CategoryInterface/category";
+import { UserResponseLight } from "../user-response-light";
 
 export interface iTaskResponseLight {
   id: number;

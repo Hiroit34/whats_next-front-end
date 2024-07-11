@@ -24,4 +24,13 @@
       border-radius: 50% !important;
       color: var(--primary-color-text);
   }
+
+  #container__price {
+    max-width: 120rem;
+  }
+
+  a {
+
+    text-decoration: none;
+}
 }

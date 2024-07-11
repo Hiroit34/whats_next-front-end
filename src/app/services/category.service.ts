@@ -2,14 +2,15 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { iCategory } from '../models/category';
+import { iCategoryLight } from '../models/CategoryInterface/category-light';
+import { iCategory } from '../models/CategoryInterface/category';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CategoryService {
 
-  cartegoryUrls: string = environment.categoryUrl;
+  categoryUrls: string = environment.categoryUrl;
   categorySubj = new BehaviorSubject<iCategory[]>([]);
 
   category$ = this.categorySubj.asObservable();
@@ -19,11 +20,20 @@ export class CategoryService {
   }
 
   getAllCategory(): Observable<iCategory[]> {
-    return this.http.get<iCategory[]>(this.cartegoryUrls);
+    return this.http.get<iCategory[]>(this.categoryUrls).pipe(
+      tap(categories => {
+        // Ensure all categories have a 'task' property defined
+        categories.forEach(category => {
+          if (!category.task) {
+            category.task = [];
+          }
+        });
+      })
+    );
   }
 
-  createCategory(category: iCategory): Observable<iCategory> {
-    return this.http.post<iCategory>(this.cartegoryUrls, category).pipe(
+  createCategory(category: iCategoryLight): Observable<iCategoryLight> {
+    return this.http.post<iCategory>(this.categoryUrls, category).pipe(
       tap(() => this.loadAllCategories())
     )
   }

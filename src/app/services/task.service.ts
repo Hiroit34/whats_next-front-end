@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { iTaskResponseLight } from '../models/task-response-light';
-import { iTask } from '../models/task';
+import { iTaskResponseLight } from '../models/TaskInterface/task-response-light';
+
 import { environment } from '../../environments/environment';
+import { iTask } from '../models/TaskInterface/task';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,6 @@ export class TaskService {
   loadAllTasks() {
     this.getAllTasks().subscribe(tasks => {
       this.taskSubject.next(tasks);
-      console.log("Queste sono le task: " + this.taskSubject)
     });
   }
 

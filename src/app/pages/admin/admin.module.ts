@@ -25,8 +25,8 @@ import { ChipModule } from 'primeng/chip';
 import { BadgeModule } from 'primeng/badge';
 import { CategoryAdminComponent } from './category-admin/category-admin.component';
 import { ToastModule } from 'primeng/toast';
-//import { ConfirmPopupModule } from 'primeng/confirmpopup';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { PaginatorModule } from 'primeng/paginator';
+import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 
@@ -59,7 +59,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     ChipModule,
     BadgeModule,
     ToastModule,
-    //ConfirmPopupModule,
+    PaginatorModule,
     ConfirmDialogModule
   ],
   providers: [

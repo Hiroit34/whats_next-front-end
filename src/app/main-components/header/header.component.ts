@@ -5,10 +5,10 @@ import { NavigationEnd, Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { AuthService } from '../../services/auth.service';
 import { iUser } from '../../models/user';
-import { filter, Observable, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { iCategory } from '../../models/category';
 import { TaskService } from '../../services/task.service';
+import { iCategoryLight } from '../../models/CategoryInterface/category-light';
 
 @Component({
   selector: 'app-header',
@@ -108,6 +108,12 @@ export class HeaderComponent {
             visible: this.userRole === 'ADMIN' && !(isCreateTaskPage === currentUrl)
           },
           {
+            label: 'All Project',
+            icon: 'pi pi-folder',
+            command: () => this.router.navigate(['/admin/project']),
+            visible: this.userRole === 'ADMIN'
+          },
+          {
             label: 'All Task',
             icon: 'pi pi-list-check',
             command: () => {
@@ -167,7 +173,7 @@ export class HeaderComponent {
     if (this.projectForm.valid) {
       const projectName = this.projectForm.get('projectName')?.value;
       const projectDescription = this.projectForm.get('projectDescription')?.value;
-      const newProject: iCategory = {
+      const newProject: iCategoryLight = {
         id: 0,
         categoryType: projectName,
         description: projectDescription

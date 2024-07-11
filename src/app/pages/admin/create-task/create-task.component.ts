@@ -5,7 +5,8 @@ import { Router } from '@angular/router';
 import { TaskService } from '../../../services/task.service';
 import { iUser } from '../../../models/user';
 import { UserService } from '../../../services/user.service';
-import { iCategory } from '../../../models/category';
+import { iCategory } from '../../../models/CategoryInterface/category';
+
 
 @Component({
   selector: 'app-create-task',
@@ -39,16 +40,15 @@ export class CreateTaskComponent implements OnInit {
   ngOnInit() {
     this.userSVC.getAllUser().subscribe(res => {
       this.users = res;
-      console.log(this.users);
     });
 
     this.categorySvc.getAllCategory().subscribe(res => {
       this.category = res.map(category => ({
         id: category.id,
         categoryType: category.categoryType,
-        description: category.description
+        description: category.description,
+        task: category.task
       }));
-      console.log(this.category);
     });
   }
 
@@ -60,8 +60,6 @@ export class CreateTaskComponent implements OnInit {
         category: selectedCategory,
         userIds: this.taskForm.value.userIds.map((user: number) => user),
       };
-
-      console.log('Payload:', taskPayload); // Debug: Verifica il payload
 
       this.taskService.createTask(taskPayload).subscribe(() => {
         this.router.navigate(['/admin/task']);

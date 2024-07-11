@@ -1,10 +1,11 @@
-import { iCategoryLight } from './category-light';
+import { iCategoryWithTitleId } from "../CategoryInterface/category-with-title-id";
+
 export interface iTask {
 
   id?: number;
   title?: string;
   description?: string;
-  category?: iCategoryLight;
+  category?: iCategoryWithTitleId;
   userIds?: number[];
   status?: string;
   isShared?: boolean;

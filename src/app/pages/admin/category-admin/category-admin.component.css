@@ -1,0 +1,9 @@
+
+::ng-deep .p-accordion {
+  margin-top: 1rem;
+}
+
+::ng-deep .p-paginator {
+  position: sticky;
+  bottom: 0;
+}

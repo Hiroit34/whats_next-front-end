@@ -9,6 +9,7 @@ import { FooterComponent } from '../../main-components/footer/footer.component';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { ScrollTopModule } from 'primeng/scrolltop';
 
 
 @NgModule({
@@ -24,7 +25,8 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
     DialogModule,
     ButtonModule,
     InputTextModule,
-    InputTextareaModule
+    InputTextareaModule,
+    ScrollTopModule
   ]
 })
 export class HomeModule { }
