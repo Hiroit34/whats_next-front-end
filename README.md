@@ -34,27 +34,19 @@ Database:
 🖥️ Frontend
 Clona il repository:
 
-sh
-Copia codice
 git clone https://github.com/tuo-utente/whatsnext-frontend.git
 cd whatsnext-frontend
 Installa le dipendenze:
 
-sh
-Copia codice
 npm install
 Avvia l'applicazione Angular:
 
-sh
-Copia codice
 ng serve
 L'applicazione sarà disponibile su http://localhost:4200.
 
 🗄️ Backend
 Clona il repository:
 
-sh
-Copia codice
 git clone https://github.com/Hiroit34/capstone_backend.git
 cd capstone_backend
 Configura il database PostgreSQL:
