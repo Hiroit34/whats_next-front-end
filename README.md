@@ -1,6 +1,5 @@
 # WhatsNext
 
-📅 WhatsNext
 WhatsNext è un'applicazione web progettata per la gestione e la creazione di progetti. Questa piattaforma permette agli amministratori di creare nuovi progetti, assegnare compiti agli utenti e monitorare lo stato di avanzamento delle attività. Gli utenti possono accettare, completare e assegnare priorità ai compiti a loro assegnati.
 
 ✨ Funzionalità
