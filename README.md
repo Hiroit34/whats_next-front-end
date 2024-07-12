@@ -34,7 +34,7 @@ Database:
 🖥️ Frontend
 Clona il repository:
 
-git clone https://github.com/tuo-utente/whatsnext-frontend.git
+git clone https://github.com/tuo-utente/whats_next-front-end.git
 cd whatsnext-frontend
 Installa le dipendenze:
 
